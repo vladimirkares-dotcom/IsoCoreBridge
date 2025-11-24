@@ -10,8 +10,8 @@
 
     <Grid>
         <Border Style="{StaticResource IcbdPanelCard}">
-            <StackPanel Padding="12"
-                        Spacing="4">
+            <StackPanel Padding="{StaticResource Thickness.IcbdPaddingL}"
+                        Spacing="{StaticResource IcbdSpacingSmall}">
                 <TextBlock Text="Hlavní"
                            Style="{StaticResource IcbdMenuSectionHeader}" />
 
