@@ -4,33 +4,79 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="using:IsoCore.App.Controls">
 
-    <!-- ZÁKLADNÍ BRUSHES PRO ICB DESK -->
+    <!-- ZÁKLADNÍ BRUSHES PRO ICB DESK (VL4D Forge palette) -->
+    <Color x:Key="Color.IcbdBackground">#FF05060A</Color>
+    <Color x:Key="Color.IcbdSurfaceLow">#FF0B0E15</Color>
+    <Color x:Key="Color.IcbdSurfaceMid">#FF111522</Color>
+    <Color x:Key="Color.IcbdSurfaceHigh">#FF181D2C</Color>
 
-    <SolidColorBrush x:Key="IcbdWindowBackgroundBrush" Color="#FF0D0F14"/>
-    <SolidColorBrush x:Key="IcbdPanelBackgroundBrush" Color="#FF161A20"/>
-    <SolidColorBrush x:Key="IcbdPanelCardBackgroundBrush" Color="#FF1F242B"/>
-    <SolidColorBrush x:Key="IcbdPanelBorderBrush" Color="#26FFFFFF"/>
-    <SolidColorBrush x:Key="IcbdCardBorderBrush" Color="#FF2E333C"/>
-    <SolidColorBrush x:Key="IcbdSectionBorderBrush" Color="#26FFFFFF"/>
-    <SolidColorBrush x:Key="IcbdMutedBackgroundBrush" Color="#FF0A0C10"/>
+    <Color x:Key="Color.IcbdAccent">#FFA855FF</Color>
+    <Color x:Key="Color.IcbdAccentSoft">#FF341A4F</Color>
+    <Color x:Key="Color.IcbdAccentStrong">#FFC77BFF</Color>
+    <Color x:Key="Color.IcbdAccentHot">#FFFF5E3A</Color>
 
-    <SolidColorBrush x:Key="IcbdPrimaryBrush" Color="#FFF36A1D"/>
+    <Color x:Key="Color.IcbdSuccess">#FF22C55E</Color>
+    <Color x:Key="Color.IcbdWarning">#FFFACC15</Color>
+    <Color x:Key="Color.IcbdError">#FFF97373</Color>
+    <Color x:Key="Color.IcbdBorderSubtle">#FF1F2933</Color>
+    <Color x:Key="Color.IcbdBorderStrong">#FF4B5563</Color>
 
-    <SolidColorBrush x:Key="IcbdDangerBrush" Color="#FFDD3F3F"/>
-    <SolidColorBrush x:Key="IcbdWarningBrush" Color="#FFF2B225"/>
-    <SolidColorBrush x:Key="IcbdSuccessBrush" Color="#FF2ACF70"/>
+    <Color x:Key="Color.IcbdTextPrimary">#FFF9FAFB</Color>
+    <Color x:Key="Color.IcbdTextSecondary">#FF9CA3AF</Color>
+    <Color x:Key="Color.IcbdTextMuted">#FF6B7280</Color>
+    <Color x:Key="Color.IcbdTextAccent">#FFA855FF</Color>
 
-    <SolidColorBrush x:Key="IcbdPrimaryTextBrush" Color="#FFF6F6F6"/>
-    <SolidColorBrush x:Key="IcbdSecondaryTextBrush" Color="#FFB7BABF"/>
-    <SolidColorBrush x:Key="IcbdMutedTextBrush" Color="#FF7A7E84"/>
+    <SolidColorBrush x:Key="IcbdWindowBackgroundBrush" Color="{StaticResource Color.IcbdBackground}"/>
+    <SolidColorBrush x:Key="IcbdBackgroundBrush" Color="{StaticResource Color.IcbdBackground}" />
+    <SolidColorBrush x:Key="IcbdSurfaceLowBrush" Color="{StaticResource Color.IcbdSurfaceLow}" />
+    <SolidColorBrush x:Key="IcbdSurfaceMidBrush" Color="{StaticResource Color.IcbdSurfaceMid}" />
+    <SolidColorBrush x:Key="IcbdSurfaceHighBrush" Color="{StaticResource Color.IcbdSurfaceHigh}" />
+    <SolidColorBrush x:Key="IcbdPanelBackgroundBrush" Color="{StaticResource Color.IcbdSurfaceLow}"/>
+    <SolidColorBrush x:Key="IcbdPanelCardBackgroundBrush" Color="{StaticResource Color.IcbdSurfaceMid}"/>
+    <SolidColorBrush x:Key="IcbdPanelBorderBrush" Color="{StaticResource Color.IcbdBorderSubtle}"/>
+    <SolidColorBrush x:Key="IcbdCardBorderBrush" Color="{StaticResource Color.IcbdBorderStrong}"/>
+    <SolidColorBrush x:Key="IcbdSectionBorderBrush" Color="{StaticResource Color.IcbdBorderSubtle}"/>
+    <SolidColorBrush x:Key="IcbdMutedBackgroundBrush" Color="{StaticResource Color.IcbdSurfaceLow}"/>
+
+    <SolidColorBrush x:Key="IcbdPrimaryBrush" Color="{StaticResource Color.IcbdAccent}"/>
+
+    <SolidColorBrush x:Key="IcbdDangerBrush" Color="{StaticResource Color.IcbdError}"/>
+    <SolidColorBrush x:Key="IcbdWarningBrush" Color="{StaticResource Color.IcbdWarning}"/>
+    <SolidColorBrush x:Key="IcbdSuccessBrush" Color="{StaticResource Color.IcbdSuccess}"/>
+
+    <SolidColorBrush x:Key="IcbdPrimaryTextBrush" Color="{StaticResource Color.IcbdTextPrimary}"/>
+    <SolidColorBrush x:Key="IcbdSecondaryTextBrush" Color="{StaticResource Color.IcbdTextSecondary}"/>
+    <SolidColorBrush x:Key="IcbdMutedTextBrush" Color="{StaticResource Color.IcbdTextMuted}"/>
 
     <x:Double x:Key="IcbdSpacingSmall">8</x:Double>
     <x:Double x:Key="IcbdSpacingMedium">16</x:Double>
     <x:Double x:Key="IcbdSpacingLarge">24</x:Double>
 
-    <!-- Jediná definice Accent brush -->
-    <SolidColorBrush x:Key="IcbdAccentBrush" Color="#FFFF7A1A"/>
-    <SolidColorBrush x:Key="IcbdAccentMutedBrush" Color="#FFCC6615"/>
+    <SolidColorBrush x:Key="IcbdAccentBrush" Color="{StaticResource Color.IcbdAccent}"/>
+    <SolidColorBrush x:Key="IcbdAccentSoftBrush" Color="{StaticResource Color.IcbdAccentSoft}" />
+    <SolidColorBrush x:Key="IcbdAccentStrongBrush" Color="{StaticResource Color.IcbdAccentStrong}" />
+    <SolidColorBrush x:Key="IcbdAccentHotBrush" Color="{StaticResource Color.IcbdAccentHot}" />
+    <SolidColorBrush x:Key="IcbdAccentMutedBrush" Color="{StaticResource Color.IcbdAccentSoft}"/>
+
+    <SolidColorBrush x:Key="IcbdBorderSubtleBrush" Color="{StaticResource Color.IcbdBorderSubtle}" />
+    <SolidColorBrush x:Key="IcbdBorderStrongBrush" Color="{StaticResource Color.IcbdBorderStrong}" />
+
+    <SolidColorBrush x:Key="IcbdTextPrimaryBrush" Color="{StaticResource Color.IcbdTextPrimary}" />
+    <SolidColorBrush x:Key="IcbdTextSecondaryBrush" Color="{StaticResource Color.IcbdTextSecondary}" />
+    <SolidColorBrush x:Key="IcbdTextMutedBrush" Color="{StaticResource Color.IcbdTextMuted}" />
+    <SolidColorBrush x:Key="IcbdTextAccentBrush" Color="{StaticResource Color.IcbdTextAccent}" />
+
+    <CornerRadius x:Key="CornerRadius.IcbdXS">2</CornerRadius>
+    <CornerRadius x:Key="CornerRadius.IcbdS">4</CornerRadius>
+    <CornerRadius x:Key="CornerRadius.IcbdM">8</CornerRadius>
+    <CornerRadius x:Key="CornerRadius.IcbdL">12</CornerRadius>
+    <CornerRadius x:Key="CornerRadius.IcbdXL">18</CornerRadius>
+
+    <Thickness x:Key="Thickness.IcbdPaddingXS">4</Thickness>
+    <Thickness x:Key="Thickness.IcbdPaddingS">8</Thickness>
+    <Thickness x:Key="Thickness.IcbdPaddingM">12</Thickness>
+    <Thickness x:Key="Thickness.IcbdPaddingL">16</Thickness>
+    <Thickness x:Key="Thickness.IcbdPaddingXL">24</Thickness>
 
     <SolidColorBrush x:Key="IcbdWindowChromeButtonNormalBrush" Color="Transparent"/>
     <SolidColorBrush x:Key="IcbdWindowChromeButtonPointerOverBrush" Color="#33FFFFFF"/>
@@ -88,6 +134,53 @@
         <Setter Property="FontWeight" Value="Normal"/>
     </Style>
 
+    <Style x:Key="IcbdHeadlineXLTextBlockStyle"
+           TargetType="TextBlock">
+        <Setter Property="FontSize" Value="28" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{StaticResource IcbdTextPrimaryBrush}" />
+    </Style>
+
+    <Style x:Key="IcbdHeadlineLTextBlockStyle"
+           TargetType="TextBlock">
+        <Setter Property="FontSize" Value="22" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{StaticResource IcbdTextPrimaryBrush}" />
+    </Style>
+
+    <Style x:Key="IcbdTitleMTextBlockStyle"
+           TargetType="TextBlock">
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{StaticResource IcbdTextPrimaryBrush}" />
+    </Style>
+
+    <Style x:Key="IcbdBodyTextBlockStyle"
+           TargetType="TextBlock">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Foreground" Value="{StaticResource IcbdTextSecondaryBrush}" />
+    </Style>
+
+    <Style x:Key="IcbdBodyMutedTextBlockStyle"
+           TargetType="TextBlock"
+           BasedOn="{StaticResource IcbdBodyTextBlockStyle}">
+        <Setter Property="Opacity" Value="0.6" />
+    </Style>
+
+    <Style x:Key="IcbdCaptionTextBlockStyle"
+           TargetType="TextBlock">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Foreground" Value="{StaticResource IcbdTextMutedBrush}" />
+    </Style>
+
+    <Style x:Key="IcbdBadgeTextBlockStyle"
+           TargetType="TextBlock">
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{StaticResource IcbdTextAccentBrush}" />
+        <Setter Property="TextWrapping" Value="NoWrap" />
+    </Style>
+
     <Style x:Key="IcbdPageGrid" TargetType="Grid">
         <Setter Property="Padding" Value="32"/>
         <Setter Property="RowSpacing" Value="12"/>
@@ -98,11 +191,13 @@
     </Style>
 
     <Style x:Key="IcbdDashboardContentStack" TargetType="StackPanel">
-        <Setter Property="Spacing" Value="12"/>
+        <Setter Property="Spacing" Value="{StaticResource IcbdSpacingMedium}"/>
     </Style>
 
     <Style x:Key="IcbdDashboardHeaderGrid" TargetType="Grid">
-        <Setter Property="Margin" Value="0,0,0,12"/>
+        <Setter Property="Margin" Value="0,0,0,{StaticResource IcbdSpacingMedium}"/>
+        <Setter Property="ColumnSpacing" Value="{StaticResource IcbdSpacingSmall}"/>
+        <Setter Property="RowSpacing" Value="4"/>
     </Style>
 
     <Style x:Key="IcbdDashboardDateText" TargetType="TextBlock">
@@ -114,7 +209,7 @@
     <Style x:Key="IcbdHeaderActionPanel" TargetType="StackPanel">
         <Setter Property="HorizontalAlignment" Value="Right"/>
         <Setter Property="VerticalAlignment" Value="Top"/>
-        <Setter Property="Spacing" Value="8"/>
+        <Setter Property="Spacing" Value="{StaticResource IcbdSpacingSmall}"/>
     </Style>
 
     <Style x:Key="IcbdHeaderCaptionText" TargetType="TextBlock" BasedOn="{StaticResource IcbdCaptionText}">
@@ -127,7 +222,8 @@
     </Style>
 
     <Style x:Key="IcbdDashboardCardsGrid" TargetType="Grid">
-        <Setter Property="ColumnSpacing" Value="12"/>
+        <Setter Property="ColumnSpacing" Value="{StaticResource IcbdSpacingMedium}"/>
+        <Setter Property="RowSpacing" Value="{StaticResource IcbdSpacingMedium}"/>
     </Style>
 
     <Style x:Key="IcbdDashboardLeftColumnStack" TargetType="StackPanel">
@@ -166,6 +262,28 @@
 
     <Style x:Key="IcbdRightAlignedPrimaryButton" TargetType="Button" BasedOn="{StaticResource IcbdPrimaryButton}">
         <Setter Property="HorizontalAlignment" Value="Right"/>
+    </Style>
+
+    <Style x:Key="IcbdDashboardCardBaseStyle"
+           TargetType="Border">
+        <Setter Property="Background" Value="{StaticResource IcbdSurfaceMidBrush}" />
+        <Setter Property="CornerRadius" Value="{StaticResource CornerRadius.IcbdL}" />
+        <Setter Property="Padding" Value="{StaticResource Thickness.IcbdPaddingM}" />
+        <Setter Property="BorderBrush" Value="{StaticResource IcbdBorderSubtleBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
+    <Style x:Key="IcbdDashboardCardPrimaryStyle"
+           TargetType="Border"
+           BasedOn="{StaticResource IcbdDashboardCardBaseStyle}">
+        <Setter Property="Background" Value="{StaticResource IcbdSurfaceHighBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource IcbdAccentSoftBrush}" />
+    </Style>
+
+    <Style x:Key="IcbdDashboardCardSecondaryStyle"
+           TargetType="Border"
+           BasedOn="{StaticResource IcbdDashboardCardBaseStyle}">
+        <Setter Property="BorderBrush" Value="{StaticResource IcbdBorderSubtleBrush}" />
     </Style>
 
     <Style x:Key="IcbdPanelCard" TargetType="Border">
@@ -241,6 +359,26 @@
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Padding" Value="8,4"/>
         <Setter Property="CornerRadius" Value="6"/>
+    </Style>
+
+    <Style x:Key="IcbdButtonPrimaryStyle"
+           TargetType="Button"
+           BasedOn="{StaticResource IcbdPrimaryButton}">
+        <Setter Property="Background" Value="{StaticResource IcbdAccentBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource IcbdTextPrimaryBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource IcbdAccentStrongBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource CornerRadius.IcbdM}" />
+    </Style>
+
+    <Style x:Key="IcbdButtonSecondaryStyle"
+           TargetType="Button"
+           BasedOn="{StaticResource IcbdPrimaryButton}">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{StaticResource IcbdTextPrimaryBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource IcbdBorderStrongBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource CornerRadius.IcbdM}" />
     </Style>
 
     <Style x:Key="IcbdWindowChromeButtonStyle" TargetType="Button">
@@ -341,8 +479,8 @@
 
     <Style x:Key="OverviewCardStyle" TargetType="Border">
         <Setter Property="CornerRadius" Value="12" />
-        <Setter Property="Padding" Value="12" />
-        <Setter Property="Margin" Value="0,0,16,16" />
+        <Setter Property="Padding" Value="16" />
+        <Setter Property="Margin" Value="0" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="BorderBrush" Value="#22FFFFFF" />
         <Setter Property="Background" Value="#0DFFFFFF" />
