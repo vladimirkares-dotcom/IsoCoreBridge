@@ -28,7 +28,7 @@ Last updated: 2025-11-24
 - USERS (S-balíček): hotovo (uživatelé, CRUD, hesla, UserFormError binding).
 - SETTINGS + ChangePassword: hotovo (snapshot aktuálního uživatele, změna hesla, stránky navázané na VM).
 - PROJECTS (P-balíček): P1–P5 hotovo (async načtení, výběr ↔ AppState sync, základní hinty/akce na ProjectsPage); P6 (UI/UX pro navigaci/přehled) zbývá.
-- DASHBOARD (D-balíček): D1–D6 hotovo (analýza, data, navigace, shell) + D6–P1 až D6–P5 hotovo (finální moderní vizuální design ve stylu VL4D, karty, typografie, mezery); dashboard je 100 % dokončený, další práce: UI/UX pro levé navigační menu.
+- DASHBOARD (D-balíček): D1–D6 hotovo (analýza, data, navigace, shell) + D6–P1 až D6–P5 hotovo (finální moderní vizuální design ve stylu VL4D, karty, typografie, mezery); dashboard je 100 % dokončený.
 
 ## Completed migration steps (chronological)
 - Migrated `RoleService` and `IRoleService` (offline role model).
@@ -42,6 +42,7 @@ Last updated: 2025-11-24
 - PROJECTS P1–P4: async loader in `ProjectsViewModel`, selection ↔ `AppState.CurrentProject` sync, ProjectsPage bound to `Projects`/`SelectedProject`, selection changes update AppState.
 - Stabilized build pipeline (Debug/x64, win-x64).
 - D6–P5: Final VL4D balance pass na DashboardPage – sjednocení spodního okraje header gridu s kartovým layoutem pomocí `IcbdSpacingMedium`, vizuální rytmus headeru a karet ustálen, build bez chyb.
+- E1–P5: Stabilizace levého menu – rollback riskantního ControlTemplate (AccessViolation), zachování spacing/typografie z E1–P1/E1–P2, IcbdMenuButton nyní jednoduchý stabilní styl; pokročilé Forge efekty odloženy do budoucího bloku.
 
 ## Next planned backend steps
 - Remaining UI/UX wiring: richer validation for Login (focus/error presentation) and UI polish for Users/Settings/Projects (P5); replace the template MainPage with the real dashboard/shell using existing viewmodels.

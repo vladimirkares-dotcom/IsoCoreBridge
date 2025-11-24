@@ -66,6 +66,13 @@
     <SolidColorBrush x:Key="IcbdTextMutedBrush" Color="{StaticResource Color.IcbdTextMuted}" />
     <SolidColorBrush x:Key="IcbdTextAccentBrush" Color="{StaticResource Color.IcbdTextAccent}" />
 
+    <!-- Nav item brushes -->
+    <SolidColorBrush x:Key="IcbdNavItemBackgroundBrush" Color="{StaticResource Color.IcbdSurfaceMid}" />
+    <SolidColorBrush x:Key="IcbdNavItemHoverBrush" Color="{StaticResource Color.IcbdSurfaceHigh}" />
+    <SolidColorBrush x:Key="IcbdNavItemPressedBrush" Color="{StaticResource Color.IcbdSurfaceLow}" />
+    <SolidColorBrush x:Key="IcbdNavItemDisabledBrush" Color="{StaticResource Color.IcbdSurfaceLow}" />
+    <SolidColorBrush x:Key="IcbdNavItemAccentBrush" Color="{StaticResource Color.IcbdAccent}" />
+
     <CornerRadius x:Key="CornerRadius.IcbdXS">2</CornerRadius>
     <CornerRadius x:Key="CornerRadius.IcbdS">4</CornerRadius>
     <CornerRadius x:Key="CornerRadius.IcbdM">8</CornerRadius>
@@ -165,6 +172,14 @@
            TargetType="TextBlock"
            BasedOn="{StaticResource IcbdBodyTextBlockStyle}">
         <Setter Property="Opacity" Value="0.6" />
+    </Style>
+
+    <Style x:Key="IcbdNavItemTextBlockStyle"
+           TargetType="TextBlock"
+           BasedOn="{StaticResource IcbdBodyTextBlockStyle}">
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
     </Style>
 
     <Style x:Key="IcbdCaptionTextBlockStyle"

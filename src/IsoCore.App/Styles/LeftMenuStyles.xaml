@@ -3,17 +3,26 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+    <!--
+        IcbdMenuButton – baseline navigation style.
+
+        NOTE:
+        The original advanced ControlTemplate (custom hover/pressed/focus + accent bar)
+        caused a WinUI 3 AccessViolationException at runtime.
+        For now we use a simple, template-less style for stability.
+        Advanced VL4D Forge nav effects will be revisited later in a dedicated block.
+    -->
     <Style x:Key="IcbdMenuButton" TargetType="Button">
         <Setter Property="Foreground" Value="{StaticResource IcbdPrimaryTextBrush}" />
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderBrush" Value="{x:Null}" />
+        <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Padding" Value="10,8" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="CornerRadius" Value="6" />
         <Setter Property="Margin" Value="0,2" />
         <Setter Property="MinHeight" Value="34" />
         <Setter Property="MinWidth" Value="220" />
