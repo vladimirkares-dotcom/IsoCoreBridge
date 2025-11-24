@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "IsoCore.App (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "IsoCore.App (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

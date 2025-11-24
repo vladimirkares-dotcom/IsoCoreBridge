@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<views:MenuPage
+    x:Class="IsoCore.App.Views.DashboardPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:IsoCore.App.Controls"
+    xmlns:views="using:IsoCore.App.Views"
+    xmlns:local="using:IsoCore.App.Views"
+    mc:Ignorable="d">
+
+    <Grid Background="{StaticResource IcbdWindowBackgroundBrush}"
+          Style="{StaticResource IcbdPageGrid}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="260"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Levý panel -->
+        <controls:LeftNavigationMenu
+            Grid.Column="0"
+            Style="{StaticResource IcbdLeftNavMargin}"
+            AdminSectionVisibility="{Binding AdminSectionVisibility}"
+            DashboardClicked="OnDashboardClicked"
+            ProjectsClicked="OnProjectsClicked"
+            OverviewsClicked="OnOverviewsClicked"
+            RecordsClicked="OnRecordsClicked"
+            DiaryClicked="OnDiaryClicked"
+            ExportsClicked="OnExportsClicked"
+            UsersClicked="OnUsersClicked"
+            TemplatesClicked="OnTemplatesClicked"
+            SettingsClicked="OnSettingsClicked" />
+
+        <!-- Pravý panel -->
+        <ScrollViewer Grid.Column="1"
+                      VerticalScrollBarVisibility="Auto">
+            <StackPanel Style="{StaticResource IcbdDashboardContentStack}">
+                <Grid Style="{StaticResource IcbdDashboardHeaderGrid}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="Dashboard"
+                                   Style="{StaticResource IcbdPanelHeaderText}" />
+                        <TextBlock x:Name="CurrentDateText"
+                                   Text="{Binding CurrentDate}"
+                                   Style="{StaticResource IcbdDashboardDateText}"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1"
+                                Orientation="Horizontal"
+                                Style="{StaticResource IcbdHeaderActionPanel}">
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Style="{StaticResource IcbdHeaderCaptionText}"
+                            Text="{Binding CurrentUserLabel}" />
+                        <Button x:Name="LogoutButton"
+                                Content="Odhlásit"
+                                Style="{StaticResource IcbdPrimaryButton}"
+                                Click="LogoutButton_Click"/>
+                    </StackPanel>
+                </Grid>
+                <StackPanel x:Name="DashboardErrorArea"
+                            Style="{StaticResource IcbdErrorAreaStack}"
+                            Visibility="Collapsed"/>
+
+                <!-- PRAVÝ PANEL: C5 LAYOUT (2 vlevo, 1 vpravo) -->
+                <Grid Style="{StaticResource IcbdDashboardCardsGrid}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*" />   <!-- levý sloupec (užší) -->
+                        <ColumnDefinition Width="3*" />   <!-- pravý sloupec (širší) -->
+                    </Grid.ColumnDefinitions>
+
+                    <!-- LEVÝ SLOUPEC – 2 panely pod sebou -->
+                    <StackPanel Grid.Column="0"
+                                Style="{StaticResource IcbdDashboardLeftColumnStack}">
+                        <Border x:Name="LeftTopCardHost"
+                                Style="{StaticResource DashboardCardStyle}" />
+
+                        <Border x:Name="LeftBottomCardHost"
+                                Style="{StaticResource DashboardCardStyle}" />
+                    </StackPanel>
+
+                    <!-- PRAVÝ SLOUPEC – 1 vysoká karta -->
+                    <Border Grid.Column="1"
+                            x:Name="RightBigCardHost"
+                            Style="{StaticResource DashboardCardStyle}" />
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</views:MenuPage>

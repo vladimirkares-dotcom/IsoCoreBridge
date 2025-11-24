@@ -1,0 +1,57 @@
+<Page
+    x:Class="IsoCore.App.Views.ProjectsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    mc:Ignorable="d">
+
+    <Grid RowDefinitions="Auto,Auto,*,Auto,Auto,Auto"
+          Style="{StaticResource IcbdPageGrid}">
+        <TextBlock
+            Text="Seznam projektů"
+            Style="{StaticResource IcbdHeaderText}" />
+
+        <TextBlock
+            Grid.Row="1"
+            Style="{StaticResource IcbdSubheaderText}">
+            <Run Text="Počet projektů: " />
+            <Run Text="{Binding Projects.Count}" />
+        </TextBlock>
+
+        <ListView
+            Grid.Row="2"
+            ItemsSource="{Binding Projects}"
+            SelectedItem="{Binding SelectedProject, Mode=TwoWay}"
+            SelectionChanged="OnProjectSelectionChanged">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Vertical" Style="{StaticResource IcbdListItemContainer}">
+                        <TextBlock
+                            Text="{Binding DisplayName}"
+                            Style="{StaticResource IcbdListItemTitleText}" />
+                        <TextBlock
+                            Text="{Binding ProjectCode}"
+                            Style="{StaticResource IcbdListItemCaptionText}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <TextBlock
+            Grid.Row="3"
+            Text="Vyberte projekt v seznamu a klikněte na „Otevřít projekt“."
+            Style="{StaticResource IcbdCaptionText}" />
+
+        <TextBlock
+            Grid.Row="4"
+            Text="Žádné projekty nejsou k dispozici."
+            Style="{StaticResource IcbdCaptionText}" />
+
+        <Button
+            Grid.Row="5"
+            Content="Otevřít projekt"
+            Style="{StaticResource IcbdRightAlignedPrimaryButton}"
+            Click="OpenProjectButton_Click" />
+    </Grid>
+</Page>

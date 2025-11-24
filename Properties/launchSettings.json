@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "IsoCoreBridge (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "IsoCoreBridge (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="IsoCore.App.Controls.LeftNavigationMenu"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    x:Name="RootControl">
+
+    <Grid>
+        <Border Style="{StaticResource IcbdPanelCard}">
+            <StackPanel Padding="12"
+                        Spacing="4">
+                <TextBlock Text="Hlavní"
+                           Style="{StaticResource IcbdMenuSectionHeader}" />
+
+                <Button Content="Dashboard"
+                        Style="{StaticResource IcbdMenuButton}"
+                        Click="OnDashboardClicked" />
+                <Button Content="Projekty"
+                        Style="{StaticResource IcbdMenuButton}"
+                        Click="OnProjectsClicked" />
+                <Button Content="Přehledy"
+                        Style="{StaticResource IcbdMenuButton}"
+                        Click="OnOverviewsClicked" />
+
+                <Border Style="{StaticResource IcbdMenuDivider}" />
+
+                <TextBlock Text="Data"
+                           Style="{StaticResource IcbdMenuSectionHeader}" />
+
+                <Button Content="Záznamy"
+                        Style="{StaticResource IcbdMenuButton}"
+                        Click="OnRecordsClicked" />
+                <Button Content="Deník"
+                        Style="{StaticResource IcbdMenuButton}"
+                        Click="OnDiaryClicked" />
+                <Button Content="Exporty"
+                        Style="{StaticResource IcbdMenuButton}"
+                        Click="OnExportsClicked" />
+
+                <Border Style="{StaticResource IcbdMenuDivider}" />
+
+                <TextBlock Text="Kontroling"
+                           Style="{StaticResource IcbdMenuSectionHeader}" />
+
+                <Button Content="Výsledovka"
+                        Style="{StaticResource IcbdMenuButton}"
+                        IsEnabled="False" />
+                <Button Content="Cashflow"
+                        Style="{StaticResource IcbdMenuButton}"
+                        IsEnabled="False" />
+                <Button Content="Rozvaha"
+                        Style="{StaticResource IcbdMenuButton}"
+                        IsEnabled="False" />
+
+                <Border Style="{StaticResource IcbdMenuDivider}" />
+
+                <TextBlock Text="Ceníky"
+                           Style="{StaticResource IcbdMenuSectionHeader}" />
+
+                <Button Content="Materiály"
+                        Style="{StaticResource IcbdMenuButton}"
+                        IsEnabled="False" />
+                <Button Content="Práce"
+                        Style="{StaticResource IcbdMenuButton}"
+                        IsEnabled="False" />
+                <Button Content="Poddodavatelé"
+                        Style="{StaticResource IcbdMenuButton}"
+                        IsEnabled="False" />
+                <Button Content="Vybavení"
+                        Style="{StaticResource IcbdMenuButton}"
+                        IsEnabled="False" />
+
+                <Border Style="{StaticResource IcbdMenuDivider}" />
+
+                <TextBlock Text="Pomůcky"
+                           Style="{StaticResource IcbdMenuSectionHeader}" />
+
+                <Button Content="Pomůcky"
+                        Style="{StaticResource IcbdMenuButton}"
+                        IsEnabled="False" />
+
+                <Border Style="{StaticResource IcbdMenuDivider}" />
+
+                <StackPanel x:Name="AdminSection"
+                            Visibility="{Binding AdminSectionVisibility}">
+                    <TextBlock Text="Správa"
+                               Style="{StaticResource IcbdMenuSectionHeader}" />
+
+                    <Button Content="Uživatelé"
+                            Style="{StaticResource IcbdMenuButton}"
+                            Click="OnUsersClicked" />
+                    <Button Content="Šablony"
+                            Style="{StaticResource IcbdMenuButton}"
+                            Click="OnTemplatesClicked" />
+                    <Button Content="Nastavení"
+                            Style="{StaticResource IcbdMenuButton}"
+                            Click="OnSettingsClicked" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

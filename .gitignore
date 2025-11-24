@@ -1,0 +1,40 @@
+﻿# Build artefacts
+bin/
+obj/
+[Bb]uild/
+[Ll]og/
+*.log
+
+# VS / tooling
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.ide/
+*.userprefs
+
+# MSBuild logs
+*.binlog
+
+# NuGet
+packages/
+*.nupkg
+project.lock.json
+
+# Publish output
+**/publish/
+**/Release/
+**/Debug/
+
+# ReSharper / Rider
+_ReSharper*/
+*.DotSettings.user
+
+# App specific
+msbuild.binlog
+GPT/
+
+# OS noise
+Thumbs.db
+Desktop.ini
+.DS_Store
