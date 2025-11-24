@@ -31,7 +31,25 @@ ChatGPT, here is what is currently implemented in the clean IsoCoreBridge projec
 - Dashboard: `DashboardPage` + `DashboardViewModel` are wired to `AppState` (CurrentProject/CurrentUser/ProjectRegistry), expose project stats and current project/user labels, and listen to AppState changes for cards (progress, current project, projects overview).
 - DI style: services exposed as static properties on `App.xaml.cs` (no `Microsoft.Extensions`/container usage), e.g., `App.RoleService`, `App.UserAuthService`.
 - Build/startup: `dotnet build .\src\IsoCore.App\IsoCore.App.csproj -c Debug -r win-x64` succeeds; app starts without crashes in VS/Debug x64 after auth hardening.
-- Stav balíčků: USERS (S-balíček) – 100 % hotovo; SETTINGS + ChangePassword – 100 % hotovo; PROJECTS (P-balíček) – P1–P5 hotovo (load + výběr + AppState sync, ProjectsPage hinty/akce), P6 UI/UX zbývá; DASHBOARD (D-balíček) – D1–D4 hotovo (analýza + data + navigace + kontrola funkční parity, inline styly v Theme.xaml); D5–D6 (navigace na detail + UI ladění) zbývá.
+- Stav balíčků: USERS (S-balíček) – 100 % hotovo; SETTINGS + ChangePassword – 100 % hotovo; PROJECTS (P-balíček) – P1–P5 hotovo (load + výběr + AppState sync, ProjectsPage hinty/akce), P6 UI/UX zbývá; DASHBOARD (D-balíček) – D1–D6 hotovo (analýza + data + navigace + kontrola funkční parity, inline styly v Theme.xaml, základní grid/spacing layout polish v D5, start shell v D6 – aplikace startuje přímo do DashboardPage, šablona Hello World odstraněna); D6+ (finální moderní vizuální design ve stylu VL4D v krocích D6–P1 až D6–P5) hotovo – dashboard je plně doladěný.
+
+## D6–P5 – Final VL4D Balance Pass (Completed)
+
+**Changes performed:**
+- Unified dashboard header spacing by aligning `IcbdDashboardHeaderGrid` bottom margin with the global `IcbdSpacingMedium` token.
+- Ensured the visual rhythm between the header and the dashboard cards grid matches the spacing cadence established in D6–P1 through D6–P4.
+- Verified that no padding overrides or layout regressions were introduced.
+
+**Modified files:**
+- `src/IsoCore.App/Styles/Theme.xaml`
+
+**Build result:**
+- `dotnet build src\IsoCore.App\IsoCore.App.csproj -c Debug -r win-x64`  
+  → success, 0 errors, 0 warnings.
+
+**Status:**
+- D6–P1 až D6–P5 hotovo, dashboard design je nyní 100 % dokončený a stabilní (VL4D Forge styl).
+- Další krok: UI/UX blok pro levé navigační menu.
 
 ## Next Steps (planned)
 - Remaining UI tasks: richer validation/UX for Login, UI/UX polish for Users/Settings pages, and replacing the template MainPage with the real dashboard/shell; PROJECTS P5 (UI/UX pro přehled/navigaci projektů).
