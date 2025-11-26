@@ -171,3 +171,14 @@
 - Double-clicking a project row reuses the same “Open project” flow as the button and navigates to ProjectDetailPage with dispatcher-safe calls.
 - Status: F7 completed and stable; future collection changes must keep the UI-thread marshalling pattern.
 
+### F8 - Projects CRUD on dispatcher-safe infra
+
+- Projects page now supports full CRUD on top of the F7 dispatcher-safe VM/state layer.
+- Async projects loading via ProjectsViewModel.LoadProjectsAsync + ProjectRegistry.LoadFromStorageAsync with UI-thread marshalling.
+- “Založit projekt” dialog (code + name) with validation, routed through CreateAndAddProjectAsync.
+- “Editovat projekt” dialog with pre-filled values, non-empty + unique code validation, and ProjectInfo update via ProjectRegistry.
+- “Smazat projekt” confirmation dialog with dispatcher-safe removal and persistence.
+- Double-click on a project row opens it through the existing navigation pipeline (Projects → ProjectDetailPage).
+- UX polish: compact two-row list item layout (code + name, status); Edit/Delete auto-enabled/disabled based on selection.
+- Builds on F7-Final (dispatcher-safe PropertyChanged + ObservableCollection changes); COMException 0x8001010E fixes remain intact.
+

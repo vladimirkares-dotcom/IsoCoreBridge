@@ -27,7 +27,7 @@ Last updated: 2025-11-24
 ## Modulový stav
 - USERS (S-balíček): hotovo (uživatelé, CRUD, hesla, UserFormError binding).
 - SETTINGS + ChangePassword: hotovo (snapshot aktuálního uživatele, změna hesla, stránky navázané na VM).
-- PROJECTS (P-balíček): P1-P5 hotovo (async načtení, výběr ↔ AppState sync, základní hinty/akce na ProjectsPage); P6 (UI/UX pro navigaci/přehled) zbývá. Projekty jsou async-loaded přes ProjectsStorageService + ProjectRegistry (dispatcher-safe); UI má dialog pro založení projektu (auto výběr) a double-click open na řádku seznamu.
+- PROJECTS (P-balíček): P1-P5 hotovo (async načtení, výběr ↔ AppState sync, základní hinty/akce na ProjectsPage); P6 (UI/UX pro navigaci/přehled) zbývá. Projekty jsou async-loaded přes ProjectsStorageService + ProjectRegistry (dispatcher-safe); UI má kompaktní dvouřádkový layout seznamu (kód + název, status), dialog pro založení projektu (auto výběr), dialog pro editaci (validace unikátního kódu), dialog pro smazání s potvrzením, a double-click open na řádku seznamu. Edit/Delete jsou auto-enabled/disabled dle výběru.
 - DASHBOARD (D-balíček): D1–D6 hotovo (analýza, data, navigace, shell) + D6–P1 až D6–P5 hotovo (finální moderní vizuální design ve stylu VL4D, karty, typografie, mezery); dashboard je 100 % dokončený.
 
 ## Completed migration steps (chronological)
@@ -65,3 +65,5 @@ Remaining tasks = only visual polish, postponed to final UI pass.
 **F6 status:** ProjectDetailPage navigation and layout completed; ProjectsPage header filters polished. Ready to proceed with ProjectInfo-based CRUD (create/edit/delete) in the next block.
 
 **F7 status:** Done / stable — threading/dispatcher fixes around Projects & Users; projects storage abstraction added; project creation dialog + double-click open implemented.
+
+**F8 status:** Done / stable — Projects CRUD on dispatcher-safe infra (create/edit/delete dialogs with validation, async load via ProjectsStorageService + ProjectRegistry, compact list layout, selection-based button enablement).
