@@ -9,8 +9,8 @@ Last updated: 2025-11-24
 
 ## Backend services – Current state
 - **Auth Services**: `IUserAuthService` + `JsonUserAuthService` (offline, `users.encrypted`, hardened IO; `LoginResult` with `Success`, `ErrorCode`, `ErrorMessage`, `User`), `IRoleService` + `RoleService` (wraps `IsoCore.Domain.Roles` into `RoleOption`), `IUserDirectoryService` + `UserDirectoryService` (offline, local JSON users/index under `%LOCALAPPDATA%\IsoCoreBridge`, safe IO).
-- **Storage Services**: `EncryptionService` (DPAPI + AES), `EncryptedProjectStorageService`, `IProjectStorage`, `ProjectStorageManager` (encrypted project list), `ProjectPathService` (local project directory layout). Stable.
-- **State**: `AppState`, `AppStateService`, `ProjectRegistry` manage current project/user/date. Stable.
+- **Storage Services**: `EncryptionService` (DPAPI + AES), `EncryptedProjectStorageService`, `IProjectStorage`, `ProjectStorageManager` (encrypted project list), `ProjectPathService` (local project directory layout), `IProjectsStorageService` + `ProjectsStorageService` (encrypted projects store abstraction). Stable.
+- **State**: `AppState`, `AppStateService`, `ProjectRegistry` manage current project/user/date; ProjectRegistry is dispatcher-safe for UI-bound collections. Stable.
 - **Login wiring**: `LoginPage` code-behind owns `LoginViewModel`, subscribes to `LoginSucceeded`, and navigates to `MainPage` via the app’s main frame.
 - **Splash/auth gate**: `SplashViewModel.NavigateFromSplash()` ensures `App.MainWindow.Content` is a `Frame`, then routes to `LoginPage` if `App.AppState.CurrentUser` is null or to `MainPage` otherwise; guarded by a `_navigationTriggered` flag so it runs once after startup progress completes.
 
@@ -21,13 +21,13 @@ Last updated: 2025-11-24
 - `UsersViewModel` includes `IsBusy`, `Users` collection of `UserListItem`, `SelectedUser` synced to `Edit*` properties (EditUsername, EditDisplayName, EditRole, EditLogin, EditWorkerNumber, EditTitleBefore, EditFirstName, EditLastName, EditTitleAfter, EditJobTitle, EditCompanyName, EditCompanyAddress, EditPhoneNumber, EditNote, EditIsActive, `UserFormError`), and operations `LoadUsersAsync`, `SaveUserAsync`, `DeleteUserAsync`, `CreateUserAsync` wired to `App.UserAuthService`; `UserFormError` is public/bindable, cleared when selection changes; `UsersPage.xaml.cs` helper `SetUserFormError` sets it directly.
 - `SettingsPageViewModel` exposes bindable current-user snapshot (`CurrentUsername`, `CurrentDisplayName`, `CurrentRoleName`, `CurrentLogin`) refreshed from `App.AppState.CurrentUser`; `SettingsPage.xaml.cs` sets `DataContext`, refreshes on `Loaded`.
 - `ChangePasswordViewModel` exposes `OldPassword`, `NewPassword`, `ConfirmPassword`, `ErrorMessage`, `SuccessMessage`, `IsBusy`; validates inputs (empty checks, match, length), guards with `IsBusy`, verifies old password via `LoginAsync`, changes the current user’s password via `SetPasswordAsync`, uses `SetError`/`SetSuccess` helpers; `ChangePasswordPage.xaml` shows password boxes + bound error/success TextBlocks, and code-behind forwards box values then calls `ChangePasswordAsync`.
-- `ProjectsViewModel` exposes `Projects` (`ObservableCollection<ProjectInfo>`), `IsBusy`, `SelectedProject` synced s `AppState.CurrentProject` (setter volá `_appState.SetCurrentProject`, poslouchá `CurrentProjectChanged`), `LoadProjectsAsync()` načítá z `ProjectRegistry` s hlídáním `IsBusy`; `ProjectsPage.xaml` binduje `ItemsSource`/`SelectedItem`, `SelectionChanged` volá code-behind k nastavení current projektu, `Loaded` spouští `LoadProjectsAsync`.
+- `ProjectsViewModel` exposes `Projects` (`ObservableCollection<ProjectInfo>`), `IsBusy`, `SelectedProject` synced s `AppState.CurrentProject` (setter volá `_appState.SetCurrentProject`, poslouchá `CurrentProjectChanged`), `LoadProjectsAsync()` načítá z `ProjectRegistry` s hlídáním `IsBusy`; `ProjectsPage.xaml` binduje `ItemsSource`/`SelectedItem`, `SelectionChanged` volá code-behind k nastavení current projektu, `Loaded` spouští `LoadProjectsAsync`. Project mutations are dispatcher-safe via ProjectRegistry.
 - `DashboardViewModel` napojen na `AppState` (CurrentProject, CurrentUser, ProjectRegistry), drží `Projects`, statistiky (Total/Preparation/Execution/Completed), texty pro aktuální projekt a uživatele; `DashboardPage` poslouchá změny AppState a zobrazuje karty progresu/aktuálního projektu/seznamu projektů.
 
 ## Modulový stav
 - USERS (S-balíček): hotovo (uživatelé, CRUD, hesla, UserFormError binding).
 - SETTINGS + ChangePassword: hotovo (snapshot aktuálního uživatele, změna hesla, stránky navázané na VM).
-- PROJECTS (P-balíček): P1–P5 hotovo (async načtení, výběr ↔ AppState sync, základní hinty/akce na ProjectsPage); P6 (UI/UX pro navigaci/přehled) zbývá.
+- PROJECTS (P-balíček): P1-P5 hotovo (async načtení, výběr ↔ AppState sync, základní hinty/akce na ProjectsPage); P6 (UI/UX pro navigaci/přehled) zbývá. Projekty jsou async-loaded přes ProjectsStorageService + ProjectRegistry (dispatcher-safe); UI má dialog pro založení projektu (auto výběr) a double-click open na řádku seznamu.
 - DASHBOARD (D-balíček): D1–D6 hotovo (analýza, data, navigace, shell) + D6–P1 až D6–P5 hotovo (finální moderní vizuální design ve stylu VL4D, karty, typografie, mezery); dashboard je 100 % dokončený.
 
 ## Completed migration steps (chronological)
@@ -63,3 +63,5 @@ Remaining tasks = only visual polish, postponed to final UI pass.
 Remaining tasks = only visual polish, postponed to final UI pass.
 
 **F6 status:** ProjectDetailPage navigation and layout completed; ProjectsPage header filters polished. Ready to proceed with ProjectInfo-based CRUD (create/edit/delete) in the next block.
+
+**F7 status:** Done / stable — threading/dispatcher fixes around Projects & Users; projects storage abstraction added; project creation dialog + double-click open implemented.

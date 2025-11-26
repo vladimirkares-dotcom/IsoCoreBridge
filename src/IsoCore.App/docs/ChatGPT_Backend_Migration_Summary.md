@@ -162,3 +162,12 @@
 - ProjectRegistry dispatcher helper now awaits without ConfigureAwait(false), ensuring collection updates stay on the UI thread and avoid COMException 0x8001010E.
 - UsersViewModel.LoadUsersAsync mirrors the safe pattern: fetch users off the UI thread, then marshal Users collection mutations via DispatcherQueue to the UI thread.
 
+### F7-Final - Threading & projects storage stabilization
+
+- ProjectRegistry now resolves DispatcherQueue at call time and updates Projects on the UI thread, eliminating COMException 0x8001010E.
+- UsersViewModel.LoadUsersAsync performs I/O off the UI thread and marshals Users mutations via DispatcherQueue (no cross-thread collection access).
+- Introduced IProjectsStorageService + ProjectsStorageService as the abstraction for encrypted local project storage.
+- ProjectsPage supports creating projects via dialog (code + name) wired to ProjectsViewModel.CreateAndAddProjectAsync through the ProjectRegistry async pipeline.
+- Double-clicking a project row reuses the same “Open project” flow as the button and navigates to ProjectDetailPage with dispatcher-safe calls.
+- Status: F7 completed and stable; future collection changes must keep the UI-thread marshalling pattern.
+
