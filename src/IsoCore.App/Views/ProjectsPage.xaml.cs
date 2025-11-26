@@ -31,6 +31,33 @@ public sealed partial class ProjectsPage : MenuPage
         await ViewModel.LoadProjectsAsync();
     }
 
+    private async void DeleteProjectButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel?.SelectedProject == null)
+        {
+            return;
+        }
+
+        var project = ViewModel.SelectedProject;
+        var dialog = new ContentDialog
+        {
+            XamlRoot = Content.XamlRoot,
+            Title = "Smazat projekt",
+            Content = $"Opravdu chcete smazat projekt \"{project.DisplayName}\"?",
+            PrimaryButtonText = "Smazat",
+            CloseButtonText = "Zrušit",
+            DefaultButton = ContentDialogButton.Close
+        };
+
+        var result = await dialog.ShowAsync();
+        if (result != ContentDialogResult.Primary)
+        {
+            return;
+        }
+
+        await ViewModel.DeleteSelectedProjectAsync();
+    }
+
     private async void EditProjectButton_Click(object sender, RoutedEventArgs e)
     {
         if (ViewModel?.SelectedProject == null)

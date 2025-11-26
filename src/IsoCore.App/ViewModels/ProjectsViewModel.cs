@@ -110,6 +110,39 @@ public class ProjectsViewModel : ViewModelBase
         }
     }
 
+    public async Task<bool> DeleteSelectedProjectAsync()
+    {
+        if (SelectedProject == null)
+        {
+            return false;
+        }
+
+        var registry = _appState.ProjectRegistry;
+        if (registry == null)
+        {
+            return false;
+        }
+
+        var target = registry.Projects.FirstOrDefault(p => ReferenceEquals(p, SelectedProject))
+                     ?? registry.Projects.FirstOrDefault(p => string.Equals(p.Id, SelectedProject.Id, StringComparison.OrdinalIgnoreCase))
+                     ?? registry.Projects.FirstOrDefault(p => string.Equals(p.Code, SelectedProject.Code, StringComparison.OrdinalIgnoreCase));
+
+        if (target == null)
+        {
+            return false;
+        }
+
+        await registry.DeleteProjectAsync(target);
+
+        if (ReferenceEquals(_appState.CurrentProject, target))
+        {
+            _appState.SetCurrentProject(null);
+        }
+
+        SelectedProject = null;
+        return true;
+    }
+
     public async Task<bool> UpdateSelectedProjectAsync(string newCode, string newName)
     {
         if (SelectedProject == null || string.IsNullOrWhiteSpace(newCode) || string.IsNullOrWhiteSpace(newName))

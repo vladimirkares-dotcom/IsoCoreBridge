@@ -54,6 +54,17 @@ public class ProjectRegistry
         await SaveToStorageAsync();
     }
 
+    public async Task DeleteProjectAsync(ProjectInfo project)
+    {
+        if (project == null)
+        {
+            return;
+        }
+
+        await RunOnDispatcherAsync(() => Projects.Remove(project));
+        await SaveToStorageAsync();
+    }
+
     public async Task UpdateProjectAsync(ProjectInfo project)
     {
         if (!Projects.Contains(project))

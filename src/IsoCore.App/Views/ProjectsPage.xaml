@@ -53,6 +53,7 @@
                     <Button x:Name="DeleteProjectButton"
                             Content="Smazat projekt"
                             Style="{StaticResource IcbdButtonSecondaryStyle}"
+                            Click="DeleteProjectButton_Click"
                             IsEnabled="False"
                             HorizontalAlignment="Stretch" />
                 </StackPanel>
@@ -171,4 +172,3 @@
         </Border>
     </Grid>
 </views:MenuPage>
-
