@@ -133,17 +133,34 @@
                             SelectionChanged="OnProjectSelectionChanged">
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel Orientation="Vertical"
-                                        Spacing="{StaticResource IcbdSpacingSmall}"
-                                        Style="{StaticResource IcbdListItemContainer}"
-                                        DoubleTapped="OnProjectItemDoubleTapped">
-                                <TextBlock Text="{Binding DisplayName}"
-                                           Style="{StaticResource IcbdListItemTitleText}" />
-                                <TextBlock Text="{Binding ProjectCode}"
-                                           Style="{StaticResource IcbdListItemCaptionText}" />
-                                <TextBlock Text="{Binding ProjectStatus}"
-                                           Style="{StaticResource IcbdBodyTextBlockStyle}" />
-                            </StackPanel>
+                            <Grid Style="{StaticResource IcbdListItemContainer}"
+                                  DoubleTapped="OnProjectItemDoubleTapped"
+                                  RowDefinitions="Auto,Auto"
+                                  ColumnDefinitions="Auto,*"
+                                  RowSpacing="{StaticResource IcbdSpacingSmall}"
+                                  ColumnSpacing="{StaticResource IcbdSpacingSmall}">
+                                <!-- First row: code + name -->
+                                <TextBlock Grid.Row="0"
+                                           Grid.Column="0"
+                                           Text="{Binding ProjectCode}"
+                                           Style="{StaticResource IcbdListItemCaptionText}"
+                                           FontWeight="SemiBold"
+                                           TextTrimming="CharacterEllipsis" />
+                                <TextBlock Grid.Row="0"
+                                           Grid.Column="1"
+                                           Text="{Binding DisplayName}"
+                                           Style="{StaticResource IcbdListItemTitleText}"
+                                           TextTrimming="CharacterEllipsis" />
+
+                                <!-- Second row: status / description / other detail (compact) -->
+                                <TextBlock Grid.Row="1"
+                                           Grid.Column="0"
+                                           Grid.ColumnSpan="2"
+                                           Text="{Binding ProjectStatus}"
+                                           Style="{StaticResource IcbdBodyTextBlockStyle}"
+                                           Opacity="0.8"
+                                           TextTrimming="CharacterEllipsis" />
+                            </Grid>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
