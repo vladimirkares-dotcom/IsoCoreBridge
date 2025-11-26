@@ -1,57 +1,153 @@
-<Page
+<?xml version="1.0" encoding="utf-8"?>
+<views:MenuPage
     x:Class="IsoCore.App.Views.ProjectsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:views="using:IsoCore.App.Views"
     mc:Ignorable="d">
 
-    <Grid RowDefinitions="Auto,Auto,*,Auto,Auto,Auto"
-          Style="{StaticResource IcbdPageGrid}">
-        <TextBlock
-            Text="Seznam projektů"
-            Style="{StaticResource IcbdHeaderText}" />
+    <Grid Background="{StaticResource IcbdWindowBackgroundBrush}"
+          Style="{StaticResource IcbdPageGrid}"
+          ColumnSpacing="{StaticResource IcbdSpacingMedium}"
+          RowSpacing="{StaticResource IcbdSpacingMedium}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="3*" />
+        </Grid.ColumnDefinitions>
 
-        <TextBlock
-            Grid.Row="1"
-            Style="{StaticResource IcbdSubheaderText}">
-            <Run Text="Počet projektů: " />
-            <Run Text="{Binding Projects.Count}" />
-        </TextBlock>
+        <!-- Levý horní blok: Akce projektu -->
+        <Border Grid.Row="0"
+                Grid.Column="0"
+                Style="{StaticResource IcbdDashboardCardBaseStyle}"
+                Padding="{StaticResource IcbdPaddingL}">
+            <StackPanel Orientation="Vertical"
+                        Spacing="{StaticResource IcbdSpacingMedium}">
+                <TextBlock Text="Akce projektu"
+                           Style="{StaticResource IcbdSubheaderText}" />
+                <StackPanel Orientation="Vertical"
+                            Spacing="{StaticResource IcbdSpacingSmall}"
+                            HorizontalAlignment="Stretch">
+                    <Button x:Name="NewProjectButton"
+                            Content="Založit projekt"
+                            Style="{StaticResource IcbdButtonSecondaryStyle}"
+                            HorizontalAlignment="Stretch" />
+                    <Button x:Name="OpenProjectButton"
+                            Content="Otevřít projekt"
+                            Style="{StaticResource IcbdButtonSecondaryStyle}"
+                            Click="OpenProjectButton_Click"
+                            IsEnabled="False"
+                            HorizontalAlignment="Stretch" />
+                    <Button x:Name="EditProjectButton"
+                            Content="Editovat projekt"
+                            Style="{StaticResource IcbdButtonSecondaryStyle}"
+                            IsEnabled="False"
+                            HorizontalAlignment="Stretch" />
+                    <Button x:Name="DeleteProjectButton"
+                            Content="Smazat projekt"
+                            Style="{StaticResource IcbdButtonSecondaryStyle}"
+                            IsEnabled="False"
+                            HorizontalAlignment="Stretch" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
 
-        <ListView
-            Grid.Row="2"
-            ItemsSource="{Binding Projects}"
-            SelectedItem="{Binding SelectedProject, Mode=TwoWay}"
-            SelectionChanged="OnProjectSelectionChanged">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Vertical" Style="{StaticResource IcbdListItemContainer}">
-                        <TextBlock
-                            Text="{Binding DisplayName}"
-                            Style="{StaticResource IcbdListItemTitleText}" />
-                        <TextBlock
-                            Text="{Binding ProjectCode}"
-                            Style="{StaticResource IcbdListItemCaptionText}" />
+        <!-- Levý spodní blok: Poslední změny -->
+        <Border Grid.Row="1"
+                Grid.Column="0"
+                Style="{StaticResource IcbdDashboardCardBaseStyle}"
+                Padding="{StaticResource IcbdPaddingL}"
+                VerticalAlignment="Stretch">
+            <StackPanel Spacing="{StaticResource IcbdSpacingSmall}">
+                <TextBlock Text="Poslední změny"
+                           Style="{StaticResource IcbdSectionHeaderText}" />
+                <TextBlock Text="Zatím žádné zobrazené změny."
+                           Style="{StaticResource IcbdBodyTextBlockStyle}" />
+            </StackPanel>
+        </Border>
+
+        <!-- Pravý horní blok: Seznam projektů -->
+        <Border Grid.Row="0"
+                Grid.Column="1"
+                Style="{StaticResource IcbdDashboardCardBaseStyle}"
+                Padding="{StaticResource IcbdPaddingL}"
+                VerticalAlignment="Stretch">
+            <Grid RowDefinitions="Auto,*,Auto"
+                  RowSpacing="{StaticResource IcbdSpacingMedium}">
+
+                <!-- Header: název + počet + vertikální filtry -->
+                <StackPanel Grid.Row="0"
+                            Orientation="Vertical"
+                            Spacing="{StaticResource IcbdSpacingSmall}"
+                            HorizontalAlignment="Stretch">
+                    <TextBlock Text="Seznam projektů"
+                               Style="{StaticResource IcbdSectionHeaderText}" />
+                    <TextBlock Style="{StaticResource IcbdSubheaderText}">
+                        <Run Text="Počet projektů: " />
+                        <Run Text="{Binding Projects.Count}" />
+                    </TextBlock>
+                    <StackPanel Orientation="Vertical"
+                                Spacing="{StaticResource IcbdSpacingSmall}"
+                                HorizontalAlignment="Stretch">
+                        <Button Content="Filtr"
+                                Style="{StaticResource IcbdButtonSecondaryStyle}"
+                                HorizontalAlignment="Stretch" />
+                        <Button Content="Hledat"
+                                Style="{StaticResource IcbdButtonSecondaryStyle}"
+                                HorizontalAlignment="Stretch" />
+                        <Button Content="Řazení"
+                                Style="{StaticResource IcbdButtonSecondaryStyle}"
+                                HorizontalAlignment="Stretch" />
                     </StackPanel>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+                </StackPanel>
 
-        <TextBlock
-            Grid.Row="3"
-            Text="Vyberte projekt v seznamu a klikněte na „Otevřít projekt“."
-            Style="{StaticResource IcbdCaptionText}" />
+                <!-- List projektů -->
+                <ListView Grid.Row="1"
+                          ItemsSource="{Binding Projects}"
+                          SelectedItem="{Binding SelectedProject, Mode=TwoWay}"
+                          SelectionChanged="OnProjectSelectionChanged">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Vertical"
+                                        Spacing="{StaticResource IcbdSpacingSmall}"
+                                        Style="{StaticResource IcbdListItemContainer}">
+                                <TextBlock Text="{Binding DisplayName}"
+                                           Style="{StaticResource IcbdListItemTitleText}" />
+                                <TextBlock Text="{Binding ProjectCode}"
+                                           Style="{StaticResource IcbdListItemCaptionText}" />
+                                <TextBlock Text="{Binding ProjectStatus}"
+                                           Style="{StaticResource IcbdBodyTextBlockStyle}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
 
-        <TextBlock
-            Grid.Row="4"
-            Text="Žádné projekty nejsou k dispozici."
-            Style="{StaticResource IcbdCaptionText}" />
+                <!-- Popisek pod seznamem -->
+                <StackPanel Grid.Row="2"
+                            Spacing="{StaticResource IcbdSpacingSmall}">
+                    <TextBlock Text="Vyberte projekt a otevřete jej pro detail."
+                               Style="{StaticResource IcbdCaptionText}" />
+                </StackPanel>
+            </Grid>
+        </Border>
 
-        <Button
-            Grid.Row="5"
-            Content="Otevřít projekt"
-            Style="{StaticResource IcbdRightAlignedPrimaryButton}"
-            Click="OpenProjectButton_Click" />
+        <!-- Pravý spodní blok: Detail projektu -->
+        <Border Grid.Row="1"
+                Grid.Column="1"
+                Style="{StaticResource IcbdDashboardCardBaseStyle}"
+                Padding="{StaticResource IcbdPaddingL}"
+                VerticalAlignment="Stretch">
+            <StackPanel Spacing="{StaticResource IcbdSpacingMedium}">
+                <TextBlock Text="Detail projektu"
+                           Style="{StaticResource IcbdSectionHeaderText}" />
+                <TextBlock Text="Vyberte projekt pro zobrazení detailu."
+                           Style="{StaticResource IcbdBodyTextBlockStyle}" />
+            </StackPanel>
+        </Border>
     </Grid>
-</Page>
+</views:MenuPage>

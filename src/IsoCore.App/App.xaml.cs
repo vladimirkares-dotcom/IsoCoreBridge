@@ -3,7 +3,6 @@ using IsoCore.App.Services.Auth;
 using IsoCore.App.Services.Users;
 using IsoCore.App.State;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -29,12 +28,8 @@ public partial class App : Application
     {
         if (_window == null)
         {
-            _window = new Window();
+            _window = new MainWindow();
             MainWindow = _window;
-
-            var frame = new Frame();
-            frame.Navigate(typeof(Views.MainPage));
-            _window.Content = frame;
         }
 
         _window.Activate();

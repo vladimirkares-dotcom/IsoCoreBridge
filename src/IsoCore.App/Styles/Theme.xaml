@@ -84,6 +84,9 @@
     <Thickness x:Key="Thickness.IcbdPaddingM">12</Thickness>
     <Thickness x:Key="Thickness.IcbdPaddingL">16</Thickness>
     <Thickness x:Key="Thickness.IcbdPaddingXL">24</Thickness>
+    <Thickness x:Key="IcbdPaddingL">24</Thickness>
+    <Thickness x:Key="IcbdSpacingTopL">0,24,0,0</Thickness>
+    <Thickness x:Key="IcbdSpacingLeftL">24,0,0,0</Thickness>
 
     <SolidColorBrush x:Key="IcbdWindowChromeButtonNormalBrush" Color="Transparent"/>
     <SolidColorBrush x:Key="IcbdWindowChromeButtonPointerOverBrush" Color="#33FFFFFF"/>

@@ -6,7 +6,7 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace IsoCore.App.Views;
 
-public sealed partial class ProjectsPage : Page
+public sealed partial class ProjectsPage : MenuPage
 {
     private readonly IAppStateService _appState;
     public ProjectsViewModel ViewModel { get; }
@@ -18,6 +18,7 @@ public sealed partial class ProjectsPage : Page
         ViewModel = new ProjectsViewModel(_appState);
         DataContext = ViewModel;
         Loaded += ProjectsPage_Loaded;
+        UpdateActionButtons(null);
     }
 
     private async void ProjectsPage_Loaded(object sender, RoutedEventArgs e)
@@ -38,6 +39,8 @@ public sealed partial class ProjectsPage : Page
         {
             vm.SetCurrentProject(selected);
         }
+
+        UpdateActionButtons(selected);
     }
 
     private void OpenProjectButton_Click(object sender, RoutedEventArgs e)
@@ -55,6 +58,14 @@ public sealed partial class ProjectsPage : Page
 
         vm.OpenProject(selected);
 
-        // TODO: navigate to ProjectDetailPage when navigation shell is available.
+        NavigateTo<ProjectDetailPage>();
+    }
+
+    private void UpdateActionButtons(ProjectInfo? selected)
+    {
+        var hasSelection = selected != null;
+        EditProjectButton.IsEnabled = hasSelection;
+        DeleteProjectButton.IsEnabled = hasSelection;
+        OpenProjectButton.IsEnabled = hasSelection;
     }
 }

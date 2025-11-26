@@ -17,7 +17,7 @@ namespace IsoCore.App.Views
 
         public void NavigateToProjects()
         {
-            Frame?.Navigate(typeof(ProjectsPage));
+            // Navigation to ProjectsPage temporarily disabled (D6 shell refactor)
         }
     }
 }

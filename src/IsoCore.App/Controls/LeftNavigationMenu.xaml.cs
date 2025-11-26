@@ -42,11 +42,7 @@ public sealed partial class LeftNavigationMenu : UserControl
     {
         ProjectsClicked?.Invoke(this, e);
 
-        var window = App.MainWindow;
-        if (window?.Content is Frame frame && frame.Content is MainPage mainPage)
-        {
-            mainPage.NavigateToProjects();
-        }
+        // navigation to ProjectsPage temporarily disabled
     }
 
     private void OnOverviewsClicked(object sender, RoutedEventArgs e)

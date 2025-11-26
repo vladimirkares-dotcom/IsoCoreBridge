@@ -84,8 +84,8 @@ public sealed partial class DashboardPage : MenuPage
         _currentProjectBodyText = new TextBlock
         {
             Text = "Zatím není vybraný žádný projekt.",
-            Opacity = 0.6,
-            TextWrapping = TextWrapping.Wrap
+            TextWrapping = TextWrapping.Wrap,
+            Style = (Style)Application.Current.Resources["IcbdBodyMutedTextBlockStyle"]
         };
 
         var panel = new StackPanel
@@ -110,7 +110,7 @@ public sealed partial class DashboardPage : MenuPage
         _projectsListPanel.Children.Add(new TextBlock
         {
             Text = "Načítám projekty...",
-            Opacity = 0.6
+            Style = (Style)Application.Current.Resources["IcbdBodyMutedTextBlockStyle"]
         });
 
         var container = new StackPanel
@@ -140,7 +140,8 @@ public sealed partial class DashboardPage : MenuPage
         container.Children.Add(new TextBlock
         {
             Text = $"Projekty celkem: {total}",
-            Opacity = 0.75
+            Opacity = 0.75,
+            Style = (Style)Application.Current.Resources["IcbdBodyTextBlockStyle"]
         });
 
         container.Children.Add(CreateProgressStatRow("V přípravě", preparationCount, total));
@@ -165,7 +166,8 @@ public sealed partial class DashboardPage : MenuPage
         {
             Text = label,
             Opacity = 0.75,
-            FontSize = 12
+            FontSize = 12,
+            Style = (Style)Application.Current.Resources["IcbdBodyTextBlockStyle"]
         };
         Grid.SetColumn(labelText, 0);
 
@@ -174,7 +176,8 @@ public sealed partial class DashboardPage : MenuPage
             Text = count.ToString(),
             FontWeight = FontWeights.SemiBold,
             Opacity = 0.85,
-            FontSize = 12
+            FontSize = 12,
+            Style = (Style)Application.Current.Resources["IcbdBodyTextBlockStyle"]
         };
         Grid.SetColumn(countText, 1);
 
@@ -238,7 +241,7 @@ public sealed partial class DashboardPage : MenuPage
         return new TextBlock
         {
             Text = text,
-            Style = (Style)Application.Current.Resources["IcbdPanelHeaderText"]
+            Style = (Style)Application.Current.Resources["IcbdTitleMTextBlockStyle"]
         };
     }
 
@@ -364,7 +367,7 @@ public sealed partial class DashboardPage : MenuPage
             _projectsListPanel.Children.Add(new TextBlock
             {
                 Text = "Zatím nejsou žádné projekty.",
-                Opacity = 0.6
+                Style = (Style)Application.Current.Resources["IcbdBodyMutedTextBlockStyle"]
             });
             return;
         }

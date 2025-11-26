@@ -15,72 +15,156 @@
                 <TextBlock Text="Hlavní"
                            Style="{StaticResource IcbdMenuSectionHeader}" />
 
-                <Button Content="Dashboard"
-                        Style="{StaticResource IcbdMenuButton}"
-                        Click="OnDashboardClicked" />
-                <Button Content="Projekty"
-                        Style="{StaticResource IcbdMenuButton}"
-                        Click="OnProjectsClicked" />
-                <Button Content="Přehledy"
-                        Style="{StaticResource IcbdMenuButton}"
-                        Click="OnOverviewsClicked" />
+                <Button Style="{StaticResource IcbdMenuButton}"
+                        Click="OnDashboardClicked">
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="{StaticResource IcbdSpacingSmall}"
+                                VerticalAlignment="Center">
+                        <TextBlock Text="Dashboard"
+                                   Style="{StaticResource IcbdNavItemTextBlockStyle}" />
+                    </StackPanel>
+                </Button>
+                <Button Style="{StaticResource IcbdMenuButton}"
+                        Click="OnProjectsClicked">
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="{StaticResource IcbdSpacingSmall}"
+                                VerticalAlignment="Center">
+                        <TextBlock Text="Projekty"
+                                   Style="{StaticResource IcbdNavItemTextBlockStyle}" />
+                    </StackPanel>
+                </Button>
+                <Button Style="{StaticResource IcbdMenuButton}"
+                        Click="OnOverviewsClicked">
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="{StaticResource IcbdSpacingSmall}"
+                                VerticalAlignment="Center">
+                        <TextBlock Text="Přehledy"
+                                   Style="{StaticResource IcbdNavItemTextBlockStyle}" />
+                    </StackPanel>
+                </Button>
 
                 <Border Style="{StaticResource IcbdMenuDivider}" />
 
                 <TextBlock Text="Data"
                            Style="{StaticResource IcbdMenuSectionHeader}" />
 
-                <Button Content="Záznamy"
-                        Style="{StaticResource IcbdMenuButton}"
-                        Click="OnRecordsClicked" />
-                <Button Content="Deník"
-                        Style="{StaticResource IcbdMenuButton}"
-                        Click="OnDiaryClicked" />
-                <Button Content="Exporty"
-                        Style="{StaticResource IcbdMenuButton}"
-                        Click="OnExportsClicked" />
+                <Button Style="{StaticResource IcbdMenuButton}"
+                        Click="OnRecordsClicked">
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="{StaticResource IcbdSpacingSmall}"
+                                VerticalAlignment="Center">
+                        <TextBlock Text="Záznamy"
+                                   Style="{StaticResource IcbdNavItemTextBlockStyle}" />
+                    </StackPanel>
+                </Button>
+                <Button Style="{StaticResource IcbdMenuButton}"
+                        Click="OnDiaryClicked">
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="{StaticResource IcbdSpacingSmall}"
+                                VerticalAlignment="Center">
+                        <TextBlock Text="Deník"
+                                   Style="{StaticResource IcbdNavItemTextBlockStyle}" />
+                    </StackPanel>
+                </Button>
+                <Button Style="{StaticResource IcbdMenuButton}"
+                        Click="OnExportsClicked">
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="{StaticResource IcbdSpacingSmall}"
+                                VerticalAlignment="Center">
+                        <TextBlock Text="Exporty"
+                                   Style="{StaticResource IcbdNavItemTextBlockStyle}" />
+                    </StackPanel>
+                </Button>
 
                 <Border Style="{StaticResource IcbdMenuDivider}" />
 
                 <TextBlock Text="Kontroling"
                            Style="{StaticResource IcbdMenuSectionHeader}" />
 
-                <Button Content="Výsledovka"
-                        Style="{StaticResource IcbdMenuButton}"
-                        IsEnabled="False" />
-                <Button Content="Cashflow"
-                        Style="{StaticResource IcbdMenuButton}"
-                        IsEnabled="False" />
-                <Button Content="Rozvaha"
-                        Style="{StaticResource IcbdMenuButton}"
-                        IsEnabled="False" />
+                <Button Style="{StaticResource IcbdMenuButton}"
+                        IsEnabled="False">
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="{StaticResource IcbdSpacingSmall}"
+                                VerticalAlignment="Center">
+                        <TextBlock Text="Výsledovka"
+                                   Style="{StaticResource IcbdNavItemTextBlockStyle}" />
+                    </StackPanel>
+                </Button>
+                <Button Style="{StaticResource IcbdMenuButton}"
+                        IsEnabled="False">
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="{StaticResource IcbdSpacingSmall}"
+                                VerticalAlignment="Center">
+                        <TextBlock Text="Cashflow"
+                                   Style="{StaticResource IcbdNavItemTextBlockStyle}" />
+                    </StackPanel>
+                </Button>
+                <Button Style="{StaticResource IcbdMenuButton}"
+                        IsEnabled="False">
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="{StaticResource IcbdSpacingSmall}"
+                                VerticalAlignment="Center">
+                        <TextBlock Text="Rozvaha"
+                                   Style="{StaticResource IcbdNavItemTextBlockStyle}" />
+                    </StackPanel>
+                </Button>
 
                 <Border Style="{StaticResource IcbdMenuDivider}" />
 
                 <TextBlock Text="Ceníky"
                            Style="{StaticResource IcbdMenuSectionHeader}" />
 
-                <Button Content="Materiály"
-                        Style="{StaticResource IcbdMenuButton}"
-                        IsEnabled="False" />
-                <Button Content="Práce"
-                        Style="{StaticResource IcbdMenuButton}"
-                        IsEnabled="False" />
-                <Button Content="Poddodavatelé"
-                        Style="{StaticResource IcbdMenuButton}"
-                        IsEnabled="False" />
-                <Button Content="Vybavení"
-                        Style="{StaticResource IcbdMenuButton}"
-                        IsEnabled="False" />
+                <Button Style="{StaticResource IcbdMenuButton}"
+                        IsEnabled="False">
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="{StaticResource IcbdSpacingSmall}"
+                                VerticalAlignment="Center">
+                        <TextBlock Text="Materiály"
+                                   Style="{StaticResource IcbdNavItemTextBlockStyle}" />
+                    </StackPanel>
+                </Button>
+                <Button Style="{StaticResource IcbdMenuButton}"
+                        IsEnabled="False">
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="{StaticResource IcbdSpacingSmall}"
+                                VerticalAlignment="Center">
+                        <TextBlock Text="Práce"
+                                   Style="{StaticResource IcbdNavItemTextBlockStyle}" />
+                    </StackPanel>
+                </Button>
+                <Button Style="{StaticResource IcbdMenuButton}"
+                        IsEnabled="False">
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="{StaticResource IcbdSpacingSmall}"
+                                VerticalAlignment="Center">
+                        <TextBlock Text="Poddodavatelé"
+                                   Style="{StaticResource IcbdNavItemTextBlockStyle}" />
+                    </StackPanel>
+                </Button>
+                <Button Style="{StaticResource IcbdMenuButton}"
+                        IsEnabled="False">
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="{StaticResource IcbdSpacingSmall}"
+                                VerticalAlignment="Center">
+                        <TextBlock Text="Vybavení"
+                                   Style="{StaticResource IcbdNavItemTextBlockStyle}" />
+                    </StackPanel>
+                </Button>
 
                 <Border Style="{StaticResource IcbdMenuDivider}" />
 
                 <TextBlock Text="Pomůcky"
                            Style="{StaticResource IcbdMenuSectionHeader}" />
 
-                <Button Content="Pomůcky"
-                        Style="{StaticResource IcbdMenuButton}"
-                        IsEnabled="False" />
+                <Button Style="{StaticResource IcbdMenuButton}"
+                        IsEnabled="False">
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="{StaticResource IcbdSpacingSmall}"
+                                VerticalAlignment="Center">
+                        <TextBlock Text="Pomůcky"
+                                   Style="{StaticResource IcbdNavItemTextBlockStyle}" />
+                    </StackPanel>
+                </Button>
 
                 <Border Style="{StaticResource IcbdMenuDivider}" />
 
@@ -89,15 +173,33 @@
                     <TextBlock Text="Správa"
                                Style="{StaticResource IcbdMenuSectionHeader}" />
 
-                    <Button Content="Uživatelé"
-                            Style="{StaticResource IcbdMenuButton}"
-                            Click="OnUsersClicked" />
-                    <Button Content="Šablony"
-                            Style="{StaticResource IcbdMenuButton}"
-                            Click="OnTemplatesClicked" />
-                    <Button Content="Nastavení"
-                            Style="{StaticResource IcbdMenuButton}"
-                            Click="OnSettingsClicked" />
+                    <Button Style="{StaticResource IcbdMenuButton}"
+                            Click="OnUsersClicked">
+                        <StackPanel Orientation="Horizontal"
+                                    Spacing="{StaticResource IcbdSpacingSmall}"
+                                    VerticalAlignment="Center">
+                            <TextBlock Text="Uživatelé"
+                                       Style="{StaticResource IcbdNavItemTextBlockStyle}" />
+                        </StackPanel>
+                    </Button>
+                    <Button Style="{StaticResource IcbdMenuButton}"
+                            Click="OnTemplatesClicked">
+                        <StackPanel Orientation="Horizontal"
+                                    Spacing="{StaticResource IcbdSpacingSmall}"
+                                    VerticalAlignment="Center">
+                            <TextBlock Text="Šablony"
+                                       Style="{StaticResource IcbdNavItemTextBlockStyle}" />
+                        </StackPanel>
+                    </Button>
+                    <Button Style="{StaticResource IcbdMenuButton}"
+                            Click="OnSettingsClicked">
+                        <StackPanel Orientation="Horizontal"
+                                    Spacing="{StaticResource IcbdSpacingSmall}"
+                                    VerticalAlignment="Center">
+                            <TextBlock Text="Nastavení"
+                                       Style="{StaticResource IcbdNavItemTextBlockStyle}" />
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
             </StackPanel>
         </Border>

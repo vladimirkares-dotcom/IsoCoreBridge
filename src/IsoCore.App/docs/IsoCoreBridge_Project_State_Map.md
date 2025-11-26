@@ -54,3 +54,11 @@ Last updated: 2025-11-24
 
 ## Notes for AI assistants
 This file describes the current known state of the project. Assistants must respect: no editing `.csproj`, no touching XAML unless explicitly asked, services via `App` static properties, no Microsoft.Extensions DI, no cloud services. Paste this as context when starting a new conversation.
+
+**F5 status:** Core layout finished, functional consistency achieved.  
+Remaining tasks = only visual polish, postponed to final UI pass.
+
+
+**F5 status:** Core layout finished, functional consistency achieved.  
+Remaining tasks = only visual polish, postponed to final UI pass.
+
