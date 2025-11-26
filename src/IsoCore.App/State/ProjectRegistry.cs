@@ -56,10 +56,21 @@ public class ProjectRegistry
 
     public async Task UpdateProjectAsync(ProjectInfo project)
     {
-        if (Projects.Contains(project))
+        if (!Projects.Contains(project))
         {
-            await SaveToStorageAsync();
+            return;
         }
+
+        await RunOnDispatcherAsync(() =>
+        {
+            var index = Projects.IndexOf(project);
+            if (index >= 0)
+            {
+                Projects[index] = project;
+            }
+        });
+
+        await SaveToStorageAsync();
     }
 
     public ProjectInfo? FindByCode(string code)

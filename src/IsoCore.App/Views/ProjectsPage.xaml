@@ -47,6 +47,7 @@
                     <Button x:Name="EditProjectButton"
                             Content="Editovat projekt"
                             Style="{StaticResource IcbdButtonSecondaryStyle}"
+                            Click="EditProjectButton_Click"
                             IsEnabled="False"
                             HorizontalAlignment="Stretch" />
                     <Button x:Name="DeleteProjectButton"
@@ -170,5 +171,4 @@
         </Border>
     </Grid>
 </views:MenuPage>
-
 

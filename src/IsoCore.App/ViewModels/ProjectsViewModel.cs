@@ -1,5 +1,7 @@
 using System;
+using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using IsoCore.App.Services;
 using IsoCore.App.State;
@@ -106,5 +108,37 @@ public class ProjectsViewModel : ViewModelBase
             _selectedProject = project;
             OnPropertyChanged(nameof(SelectedProject));
         }
+    }
+
+    public async Task<bool> UpdateSelectedProjectAsync(string newCode, string newName)
+    {
+        if (SelectedProject == null || string.IsNullOrWhiteSpace(newCode) || string.IsNullOrWhiteSpace(newName))
+        {
+            return false;
+        }
+
+        var registry = _appState.ProjectRegistry;
+        if (registry == null)
+        {
+            return false;
+        }
+
+        var duplicate = registry.Projects.Any(p =>
+            !ReferenceEquals(p, SelectedProject) &&
+            string.Equals(p.Code, newCode, StringComparison.OrdinalIgnoreCase));
+
+        if (duplicate)
+        {
+            return false;
+        }
+
+        SelectedProject.Code = newCode;
+        SelectedProject.Name = newName;
+        SelectedProject.UpdatedAt = DateTime.UtcNow;
+
+        await registry.UpdateProjectAsync(SelectedProject);
+
+        SetCurrentProject(SelectedProject);
+        return true;
     }
 }
