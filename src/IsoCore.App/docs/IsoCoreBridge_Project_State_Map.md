@@ -62,3 +62,4 @@ Remaining tasks = only visual polish, postponed to final UI pass.
 **F5 status:** Core layout finished, functional consistency achieved.  
 Remaining tasks = only visual polish, postponed to final UI pass.
 
+**F6 status:** ProjectDetailPage navigation and layout completed; ProjectsPage header filters polished. Ready to proceed with ProjectInfo-based CRUD (create/edit/delete) in the next block.

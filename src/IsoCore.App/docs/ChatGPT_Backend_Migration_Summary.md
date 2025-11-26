@@ -121,3 +121,11 @@
 - Filter / Search / Sort buttons prepared for layout unification (final spacing polish moved to the end of F-series).
 - Page builds cleanly; layout is stable and visually consistent.
 - Remaining fine-tuning (icon buttons, micro-spacing corrections) deferred to the final polish phase after all functional blocks.
+### F6 – Project detail layout & projects header polish
+
+- Added a functional "Zpět" button to ProjectDetailPage, navigating back to ProjectsPage using the existing navigation mechanism.
+- Reworked ProjectDetailPage to use the shared MenuPage layout and dashboard card style.
+- Introduced a structured "Základní informace" section showing project name, code, description and created/updated dates (read-only bindings to the current project).
+- Fixed jumbled basic info fields by switching to vertical label/value rows with shared spacing and typography.
+- Updated the "Seznam projektů" card header so Filtr/Hledat/Řazení remain in a single row with equal-width secondary buttons.
+- Build remains clean and UI is now ready for the upcoming Project CRUD implementation (create/edit/delete projects on top of the ProjectInfo model).

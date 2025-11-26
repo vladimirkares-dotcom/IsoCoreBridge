@@ -1,129 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Page
+<views:MenuPage
     x:Class="IsoCore.App.Views.ProjectDetailPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:converters="using:IsoCore.App.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:views="using:IsoCore.App.Views"
     mc:Ignorable="d">
-
-    <Page.Resources>
-        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-    </Page.Resources>
 
     <Grid Background="{StaticResource IcbdWindowBackgroundBrush}"
           Style="{StaticResource IcbdPageGrid}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-
-        <!-- Header -->
-        <Grid Grid.Row="0"
-              Style="{StaticResource IcbdDashboardHeaderGrid}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-
-            <TextBlock Text="Detail projektu"
-                       Style="{StaticResource IcbdHeaderText}" />
-
-            <Button Grid.Column="1"
-                    Content="Panel info"
-                    HorizontalAlignment="Right"
-                    Style="{StaticResource IcbdPrimaryButton}"
-                    Command="{Binding ToggleInfoPaneCommand}" />
-        </Grid>
-
-        <!-- Main content + info pane -->
-        <Grid Grid.Row="1"
-              Margin="{StaticResource IcbdSpacingTopL}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="380" />
-            </Grid.ColumnDefinitions>
-
-            <Border Grid.Column="0"
-                    Style="{StaticResource IcbdDashboardCardBaseStyle}"
-                    Padding="{StaticResource IcbdPaddingL}">
-                <StackPanel Spacing="{StaticResource IcbdSpacingMedium}">
-                    <TextBlock Text="Přehled projektu"
+        <Border Style="{StaticResource IcbdDashboardCardBaseStyle}"
+                Padding="{StaticResource IcbdPaddingL}">
+            <StackPanel Spacing="{StaticResource IcbdSpacingMedium}">
+                <Grid ColumnDefinitions="*,Auto"
+                      ColumnSpacing="{StaticResource IcbdSpacingSmall}">
+                    <TextBlock Grid.Column="0"
+                               Text="Detail projektu"
                                Style="{StaticResource IcbdSectionHeaderText}" />
+                    <Button Grid.Column="1"
+                            Content="Zpět"
+                            Style="{StaticResource IcbdButtonSecondaryStyle}"
+                            HorizontalAlignment="Right"
+                            Click="OnBackButtonClick" />
+                </Grid>
 
-                    <StackPanel Spacing="{StaticResource IcbdSpacingSmall}">
-                        <TextBlock Text="Základní informace"
-                                   Style="{StaticResource IcbdCaptionTextBlockStyle}" />
-                        <StackPanel Spacing="{StaticResource IcbdSpacingSmall}">
-                            <TextBlock Text="Název:"
-                                       Style="{StaticResource IcbdCaptionTextBlockStyle}" />
-                            <TextBlock Text="{Binding ProjectName}"
-                                       Style="{StaticResource IcbdBodyTextBlockStyle}" />
-                        </StackPanel>
-                        <StackPanel Spacing="{StaticResource IcbdSpacingSmall}">
-                            <TextBlock Text="Kód:"
-                                       Style="{StaticResource IcbdCaptionTextBlockStyle}" />
-                            <TextBlock Text="{Binding ProjectCode}"
-                                       Style="{StaticResource IcbdBodyTextBlockStyle}" />
-                        </StackPanel>
-                        <StackPanel Spacing="{StaticResource IcbdSpacingSmall}">
-                            <TextBlock Text="Stav:"
-                                       Style="{StaticResource IcbdCaptionTextBlockStyle}" />
-                            <TextBlock Text="{Binding ProjectStatus}"
-                                       Style="{StaticResource IcbdBodyTextBlockStyle}" />
-                        </StackPanel>
-                    </StackPanel>
+                <TextBlock Text="Základní informace"
+                           Style="{StaticResource IcbdSubheaderText}" />
 
-                    <StackPanel Spacing="{StaticResource IcbdSpacingSmall}">
-                        <TextBlock Text="Shrnutí"
-                                   Style="{StaticResource IcbdCaptionTextBlockStyle}" />
-                        <TextBlock Text="Počet objektů (SO): –"
-                                   Style="{StaticResource IcbdBodyTextBlockStyle}" />
-                        <TextBlock Text="Celková výměra: –"
-                                   Style="{StaticResource IcbdBodyTextBlockStyle}" />
-                        <TextBlock Text="Poslední změna: –"
-                                   Style="{StaticResource IcbdBodyTextBlockStyle}" />
-                    </StackPanel>
-
-                    <StackPanel Spacing="{StaticResource IcbdSpacingSmall}">
-                        <TextBlock Text="Poznámky"
-                                   Style="{StaticResource IcbdCaptionTextBlockStyle}" />
-                        <TextBlock Text="Zde budou v dalších krocích doplněny detailní statistiky a klíčové metriky projektu."
-                                   TextWrapping="Wrap"
-                                   Style="{StaticResource IcbdBodyTextBlockStyle}" />
-                    </StackPanel>
-                </StackPanel>
-            </Border>
-
-            <Border Grid.Column="1"
-                    Margin="{StaticResource IcbdSpacingLeftL}"
-                    Style="{StaticResource IcbdDashboardCardBaseStyle}"
-                    Padding="{StaticResource IcbdPaddingL}"
-                    Visibility="{Binding IsInfoPaneOpen, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <StackPanel Spacing="{StaticResource IcbdSpacingMedium}">
-                    <TextBlock Text="{Binding ProjectDisplayName}"
-                               Style="{StaticResource IcbdSectionHeaderText}" />
-                    <StackPanel Spacing="{StaticResource IcbdSpacingSmall}">
-                        <TextBlock Text="Kód projektu:"
-                                   Style="{StaticResource IcbdCaptionTextBlockStyle}" />
-                        <TextBlock Text="{Binding ProjectCode}"
-                                   Style="{StaticResource IcbdBodyTextBlockStyle}" />
-                    </StackPanel>
-                    <StackPanel Spacing="{StaticResource IcbdSpacingSmall}">
+                <StackPanel Spacing="{StaticResource IcbdSpacingSmall}">
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="{StaticResource IcbdSpacingMedium}">
                         <TextBlock Text="Název projektu:"
-                                   Style="{StaticResource IcbdCaptionTextBlockStyle}" />
-                        <TextBlock Text="{Binding ProjectName}"
-                                   Style="{StaticResource IcbdBodyTextBlockStyle}" />
+                                   Style="{StaticResource IcbdBodyText}" />
+                        <TextBlock Text="{Binding CurrentProject.Name, FallbackValue=(není vybrán projekt)}"
+                                   Style="{StaticResource IcbdBodyText}" />
                     </StackPanel>
-                    <StackPanel Spacing="{StaticResource IcbdSpacingSmall}">
-                        <TextBlock Text="Stav:"
-                                   Style="{StaticResource IcbdCaptionTextBlockStyle}" />
-                        <TextBlock Text="{Binding ProjectStatus}"
-                                   Style="{StaticResource IcbdBodyTextBlockStyle}" />
+
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="{StaticResource IcbdSpacingMedium}">
+                        <TextBlock Text="Kód projektu:"
+                                   Style="{StaticResource IcbdBodyText}" />
+                        <TextBlock Text="{Binding CurrentProject.Code, FallbackValue=(není vybrán projekt)}"
+                                   Style="{StaticResource IcbdBodyText}" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="{StaticResource IcbdSpacingMedium}">
+                        <TextBlock Text="Popis:"
+                                   Style="{StaticResource IcbdBodyText}" />
+                        <TextBlock Text="{Binding CurrentProject.Description, FallbackValue=(není vybrán projekt)}"
+                                   TextWrapping="Wrap"
+                                   Style="{StaticResource IcbdBodyText}" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="{StaticResource IcbdSpacingMedium}">
+                        <TextBlock Text="Vytvořeno:"
+                                   Style="{StaticResource IcbdBodyText}" />
+                        <TextBlock Text="{Binding CurrentProject.CreatedAt, FallbackValue=(neznámé)}"
+                                   Style="{StaticResource IcbdBodyText}" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="{StaticResource IcbdSpacingMedium}">
+                        <TextBlock Text="Poslední změna:"
+                                   Style="{StaticResource IcbdBodyText}" />
+                        <TextBlock Text="{Binding CurrentProject.UpdatedAt, FallbackValue=(neznámé)}"
+                                   Style="{StaticResource IcbdBodyText}" />
                     </StackPanel>
                 </StackPanel>
-            </Border>
-        </Grid>
+
+                <TextBlock Text="TODO: Další sekce detailu projektu (SO, souhrny, poznámky)…"
+                           Style="{StaticResource IcbdSubheaderText}" />
+            </StackPanel>
+        </Border>
     </Grid>
-</Page>
+</views:MenuPage>

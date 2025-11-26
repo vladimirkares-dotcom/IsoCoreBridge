@@ -80,31 +80,48 @@
             <Grid RowDefinitions="Auto,*,Auto"
                   RowSpacing="{StaticResource IcbdSpacingMedium}">
 
-                <!-- Header: název + počet + vertikální filtry -->
-                <StackPanel Grid.Row="0"
-                            Orientation="Vertical"
-                            Spacing="{StaticResource IcbdSpacingSmall}"
-                            HorizontalAlignment="Stretch">
-                    <TextBlock Text="Seznam projektů"
+                <!-- Header: název + počet vlevo, filtry vpravo -->
+                <Grid Grid.Row="0"
+                      RowDefinitions="Auto,Auto"
+                      ColumnDefinitions="*,2*"
+                      RowSpacing="{StaticResource IcbdSpacingSmall}">
+                    <TextBlock Grid.Row="0"
+                               Grid.Column="0"
+                               Text="Seznam projektů"
                                Style="{StaticResource IcbdSectionHeaderText}" />
-                    <TextBlock Style="{StaticResource IcbdSubheaderText}">
+                    <TextBlock Grid.Row="1"
+                               Grid.Column="0"
+                               Style="{StaticResource IcbdSubheaderText}">
                         <Run Text="Počet projektů: " />
                         <Run Text="{Binding Projects.Count}" />
                     </TextBlock>
-                    <StackPanel Orientation="Vertical"
-                                Spacing="{StaticResource IcbdSpacingSmall}"
-                                HorizontalAlignment="Stretch">
-                        <Button Content="Filtr"
+
+                    <Grid Grid.Row="0"
+                          Grid.RowSpan="2"
+                          Grid.Column="1"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Center"
+                          ColumnSpacing="{StaticResource IcbdSpacingSmall}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Button Grid.Column="0"
+                                Content="Filtr"
                                 Style="{StaticResource IcbdButtonSecondaryStyle}"
                                 HorizontalAlignment="Stretch" />
-                        <Button Content="Hledat"
+                        <Button Grid.Column="1"
+                                Content="Hledat"
                                 Style="{StaticResource IcbdButtonSecondaryStyle}"
                                 HorizontalAlignment="Stretch" />
-                        <Button Content="Řazení"
+                        <Button Grid.Column="2"
+                                Content="Řazení"
                                 Style="{StaticResource IcbdButtonSecondaryStyle}"
                                 HorizontalAlignment="Stretch" />
-                    </StackPanel>
-                </StackPanel>
+                    </Grid>
+                </Grid>
 
                 <!-- List projektů -->
                 <ListView Grid.Row="1"

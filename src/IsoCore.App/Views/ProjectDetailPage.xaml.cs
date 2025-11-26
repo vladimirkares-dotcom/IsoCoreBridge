@@ -3,7 +3,7 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace IsoCore.App.Views;
 
-public sealed partial class ProjectDetailPage : Page
+public sealed partial class ProjectDetailPage : MenuPage
 {
     public ProjectDetailPageViewModel ViewModel { get; }
 
@@ -12,5 +12,10 @@ public sealed partial class ProjectDetailPage : Page
         InitializeComponent();
         ViewModel = new ProjectDetailPageViewModel(App.AppState);
         DataContext = ViewModel;
+    }
+
+    private void OnBackButtonClick(object sender, RoutedEventArgs e)
+    {
+        NavigateTo<ProjectsPage>();
     }
 }
