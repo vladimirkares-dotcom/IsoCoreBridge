@@ -254,29 +254,43 @@ public class UsersViewModel : ViewModelBase
         IsBusy = true;
         try
         {
-            Users.Clear();
+            // This method is called from a UI event handler.
+            // The collection modifications must happen on the UI thread.
+            // The I/O operation should be offloaded.
+            // The previous implementation was doing I/O and then modifying the collection
+            // on a background thread, which is incorrect.
 
             var allUsers = await App.UserAuthService.GetUsersAsync().ConfigureAwait(false);
-            foreach (var u in allUsers)
+
+            // Marshal collection updates to the UI thread
+            var dispatcher = App.MainDispatcherQueue;
+            if (dispatcher != null)
             {
-                Users.Add(new UserListItem
+                dispatcher.TryEnqueue(() =>
                 {
-                    Id = u.Id,
-                    Username = u.Username,
-                    DisplayName = u.DisplayName,
-                    Role = u.Role,
-                    Login = u.Login,
-                    WorkerNumber = u.WorkerNumber,
-                    TitleBefore = u.TitleBefore,
-                    FirstName = u.FirstName,
-                    LastName = u.LastName,
-                    TitleAfter = u.TitleAfter,
-                    JobTitle = u.JobTitle,
-                    CompanyName = u.CompanyName,
-                    CompanyAddress = u.CompanyAddress,
-                    PhoneNumber = u.PhoneNumber,
-                    Note = u.Note,
-                    IsActive = u.IsActive
+                    Users.Clear();
+                    foreach (var u in allUsers)
+                    {
+                        Users.Add(new UserListItem
+                        {
+                            Id = u.Id,
+                            Username = u.Username,
+                            DisplayName = u.DisplayName,
+                            Role = u.Role,
+                            Login = u.Login,
+                            WorkerNumber = u.WorkerNumber,
+                            TitleBefore = u.TitleBefore,
+                            FirstName = u.FirstName,
+                            LastName = u.LastName,
+                            TitleAfter = u.TitleAfter,
+                            JobTitle = u.JobTitle,
+                            CompanyName = u.CompanyName,
+                            CompanyAddress = u.CompanyAddress,
+                            PhoneNumber = u.PhoneNumber,
+                            Note = u.Note,
+                            IsActive = u.IsActive
+                        });
+                    }
                 });
             }
         }
@@ -286,6 +300,7 @@ public class UsersViewModel : ViewModelBase
         }
     }
 
+    [Obsolete("This method has unsafe threading. Use SaveCurrentUserAsync instead.")]
     public async Task SaveUserAsync()
     {
         if (IsBusy)
@@ -330,6 +345,7 @@ public class UsersViewModel : ViewModelBase
         }
     }
 
+    [Obsolete("This method has unsafe threading. Use DeleteSelectedUserAsync instead.")]
     public async Task DeleteUserAsync()
     {
         if (IsBusy)
@@ -355,6 +371,7 @@ public class UsersViewModel : ViewModelBase
         }
     }
 
+    [Obsolete("This method has unsafe threading. Use SaveCurrentUserAsync instead.")]
     public async Task CreateUserAsync()
     {
         if (IsBusy)
@@ -537,8 +554,8 @@ public class UsersViewModel : ViewModelBase
             return;
         }
 
-        await _authService.DeleteUserAsync(SelectedUser.Username);
-        await ReloadUsersAsync().ConfigureAwait(false);
+        await _authService.DeleteUserAsync(SelectedUser.Username).ConfigureAwait(false);
+        await LoadUsersAsync().ConfigureAwait(false);
     }
 
     public void DeleteSelectedUserInMemory()

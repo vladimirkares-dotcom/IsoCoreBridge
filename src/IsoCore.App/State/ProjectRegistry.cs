@@ -3,49 +3,54 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using IsoCore.App.Services;
+using Microsoft.UI.Dispatching;
+using IsoCore.App.Services.Projects;
 using IsoCore.Domain;
 
 namespace IsoCore.App.State;
 
 public class ProjectRegistry
 {
-    private readonly IProjectStorage _projectStorage;
+    private readonly IProjectsStorageService _projectsStorage;
+    private static DispatcherQueue? Dispatcher => App.MainDispatcherQueue;
 
     public ObservableCollection<ProjectInfo> Projects { get; }
 
     public ProjectRegistry()
     {
-        _projectStorage = ProjectStorageManager.Storage
-            ?? throw new InvalidOperationException("ProjectStorageManager.Storage is not initialized.");
-
+        _projectsStorage = IsoCore.App.App.ProjectsStorageService
+            ?? throw new InvalidOperationException("ProjectsStorageService is not initialized.");
         Projects = new ObservableCollection<ProjectInfo>();
     }
 
     public async Task LoadFromStorageAsync()
     {
-        var loaded = await _projectStorage.LoadProjectsAsync();
-        Projects.Clear();
-        foreach (var project in loaded)
+        var loaded = await _projectsStorage.LoadProjectsAsync().ConfigureAwait(false); // IO on background thread
+
+        await RunOnDispatcherAsync(() =>
         {
-            Projects.Add(project);
-        }
+            Projects.Clear();
+            foreach (var project in loaded)
+            {
+                Projects.Add(project);
+            }
+        });
     }
 
     public async Task SaveToStorageAsync()
     {
-        await _projectStorage.SaveProjectsAsync(Projects);
+        await _projectsStorage.SaveProjectsAsync(Projects).ConfigureAwait(false);
     }
 
     public async Task AddProjectAsync(ProjectInfo project)
     {
-        Projects.Add(project);
+        await RunOnDispatcherAsync(() => Projects.Add(project));
         await SaveToStorageAsync();
     }
 
     public async Task RemoveProjectAsync(ProjectInfo project)
     {
-        Projects.Remove(project);
+        await RunOnDispatcherAsync(() => Projects.Remove(project));
         await SaveToStorageAsync();
     }
 
@@ -63,4 +68,41 @@ public class ProjectRegistry
     }
 
     public IReadOnlyList<ProjectInfo> Snapshot() => Projects.ToList();
+
+    private async Task RunOnDispatcherAsync(Action action)
+    {
+        if (action == null)
+        {
+            return;
+        }
+
+        var dispatcher = Dispatcher;
+
+        if (dispatcher == null || dispatcher.HasThreadAccess)
+        {
+            action();
+            return;
+        }
+
+        var tcs = new TaskCompletionSource();
+        if (!dispatcher.TryEnqueue(() =>
+            {
+                try
+                {
+                    action();
+                    tcs.SetResult();
+                }
+                catch (Exception ex)
+                {
+                    tcs.SetException(ex);
+                }
+            }))
+        {
+            // If enqueuing fails, execute immediately to avoid deadlock; exception will bubble naturally.
+            action();
+            return;
+        }
+
+        await tcs.Task;
+    }
 }

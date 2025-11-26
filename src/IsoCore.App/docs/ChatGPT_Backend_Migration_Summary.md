@@ -129,3 +129,36 @@
 - Fixed jumbled basic info fields by switching to vertical label/value rows with shared spacing and typography.
 - Updated the "Seznam projektů" card header so Filtr/Hledat/Řazení remain in a single row with equal-width secondary buttons.
 - Build remains clean and UI is now ready for the upcoming Project CRUD implementation (create/edit/delete projects on top of the ProjectInfo model).
+
+### F7-A - ViewModel dispatcher marshalling
+
+- Eliminated WinRT COMException 0x8001010E by ensuring PropertyChanged notifications are raised on the UI thread.
+- ViewModelBase now uses DispatcherQueue marshalling when invoked from background threads.
+- DispatcherQueue is initialized once at startup via the main window; behavior falls back to current thread if uninitialized (tests/early boot).
+- Maintains existing SetProperty/INotifyPropertyChanged surface while making notifications thread-safe for WinUI.
+
+
+### F7-B - ProjectRegistry dispatcher marshalling
+
+- ObservableCollection<ProjectInfo> mutations in ProjectRegistry now run on the UI thread via DispatcherQueue.
+- Prevented WinRT COMException 0x8001010E triggered by background-thread collection changes during project load.
+- Uses the same dispatcher initialized at startup; behavior remains compatible with existing ProjectsViewModel callers.
+
+
+### F7-C - Projects storage hardening
+
+- Invalid or incompatible projects JSON now resets to an empty store with a backup of the corrupted file, avoiding crashes.
+- Project load/save no longer triggers side effects like opening File Explorer; storage runs silently during startup and project load.
+
+
+### F7-D - Async polish for projects loading
+
+- ProjectRegistry.LoadFromStorageAsync now uses ConfigureAwait(false) on the storage I/O call to make background execution explicit before UI marshalling of collection updates.
+- ProjectsPage Loaded handler follows the standard WinUI async pattern (plain await), with heavy work remaining inside the view model.
+
+
+### F7-Final - UI-thread marshaling fixes
+
+- ProjectRegistry dispatcher helper now awaits without ConfigureAwait(false), ensuring collection updates stay on the UI thread and avoid COMException 0x8001010E.
+- UsersViewModel.LoadUsersAsync mirrors the safe pattern: fetch users off the UI thread, then marshal Users collection mutations via DispatcherQueue to the UI thread.
+

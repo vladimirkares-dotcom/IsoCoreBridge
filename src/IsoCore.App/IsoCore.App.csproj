@@ -27,6 +27,10 @@
         <RuntimeIdentifiers Condition="$([MSBuild]::GetTargetFrameworkVersion('$(TargetFramework)')) &lt; 8">win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
     </PropertyGroup>
 
+    <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+        <DefineConstants>TRACE;DEBUG;NET8_0_WINDOWS10_0_19041_0;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION</DefineConstants>
+    </PropertyGroup>
+
     <ItemGroup>
         <Content Include="Assets\SplashScreen.scale-200.png" />
         <Content Include="Assets\LockScreenLogo.scale-200.png" />

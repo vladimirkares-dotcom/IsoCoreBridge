@@ -5,34 +5,25 @@ namespace IsoCore.Domain;
 
 public class ProjectInfo
 {
-    /// <summary>
-    /// Ozna��en�� projektu (nap�t. "D35-202").
-    /// </summary>
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public string Id { get; set; } = Guid.NewGuid().ToString();
+    public string Code { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    public bool IsArchived { get; set; }
 
-    public string ProjectCode { get; set; } = string.Empty;
-
-    /// <summary>
-    /// N��zev projektu (nap�t. "Most na D35 v km 40,605").
-    /// </summary>
-    public string ProjectName { get; set; } = string.Empty;
+    // Backward-compatibility aliases (legacy naming)
+    public string ProjectCode { get => Code; set => Code = value; }
+    public string ProjectName { get => Name; set => Name = value; }
 
     public ProjectStatus Status { get; set; } = ProjectStatus.Preparation;
-
-    /// <summary>
-    /// Stavebn�� objekty (SO 202, SO 207, ...), kter�c pat�t�� k t�cto stavb�>.
-    /// UI je zat��m nevyu����v�� �?" p�tipraveno pro dal���� krok.
-    /// </summary>
     public ObservableCollection<BuildingObjectInfo> BuildingObjects { get; }
         = new ObservableCollection<BuildingObjectInfo>();
 
-    /// <summary>
-    /// Zobrazen�� n��zev v UI.
-    /// Nap�t. "SO 202: N��chod obchvat".
-    /// </summary>
-    public string DisplayName => string.IsNullOrWhiteSpace(ProjectCode)
-        ? ProjectName
-        : $"{ProjectCode}: {ProjectName}";
+    public string DisplayName => string.IsNullOrWhiteSpace(Code)
+        ? Name
+        : $"{Code}: {Name}";
 
     public override string ToString() => DisplayName;
 }

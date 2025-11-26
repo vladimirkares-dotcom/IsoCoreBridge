@@ -33,9 +33,10 @@
                 <StackPanel Orientation="Vertical"
                             Spacing="{StaticResource IcbdSpacingSmall}"
                             HorizontalAlignment="Stretch">
-                    <Button x:Name="NewProjectButton"
+                                        <Button x:Name="NewProjectButton"
                             Content="Založit projekt"
-                            Style="{StaticResource IcbdButtonSecondaryStyle}"
+                            Style="{StaticResource IcbdPrimaryButton}"
+                            Click="NewProjectButton_Click"
                             HorizontalAlignment="Stretch" />
                     <Button x:Name="OpenProjectButton"
                             Content="Otevřít projekt"
@@ -127,12 +128,13 @@
                 <ListView Grid.Row="1"
                           ItemsSource="{Binding Projects}"
                           SelectedItem="{Binding SelectedProject, Mode=TwoWay}"
-                          SelectionChanged="OnProjectSelectionChanged">
+                            SelectionChanged="OnProjectSelectionChanged">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Vertical"
                                         Spacing="{StaticResource IcbdSpacingSmall}"
-                                        Style="{StaticResource IcbdListItemContainer}">
+                                        Style="{StaticResource IcbdListItemContainer}"
+                                        DoubleTapped="OnProjectItemDoubleTapped">
                                 <TextBlock Text="{Binding DisplayName}"
                                            Style="{StaticResource IcbdListItemTitleText}" />
                                 <TextBlock Text="{Binding ProjectCode}"
@@ -168,3 +170,5 @@
         </Border>
     </Grid>
 </views:MenuPage>
+
+

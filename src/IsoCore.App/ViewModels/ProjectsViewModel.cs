@@ -1,3 +1,4 @@
+using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using IsoCore.App.Services;
@@ -43,12 +44,7 @@ public class ProjectsViewModel : ViewModelBase
 
     public async Task LoadProjectsAsync()
     {
-        if (_appState.ProjectRegistry == null)
-        {
-            return;
-        }
-
-        if (IsBusy)
+        if (_appState.ProjectRegistry == null || IsBusy)
         {
             return;
         }
@@ -62,6 +58,39 @@ public class ProjectsViewModel : ViewModelBase
         {
             IsBusy = false;
         }
+    }
+
+    public async Task CreateAndAddProjectAsync(string code, string name)
+    {
+        if (_appState.ProjectRegistry == null || string.IsNullOrWhiteSpace(name))
+        {
+            return;
+        }
+
+        var normalizedCode = string.IsNullOrWhiteSpace(code) ? Guid.NewGuid().ToString("N") : code;
+
+        if (_appState.ProjectRegistry.FindByCode(normalizedCode) != null)
+        {
+            return;
+        }
+
+        var now = DateTime.UtcNow;
+
+        var project = new ProjectInfo
+        {
+            Id = Guid.NewGuid().ToString(),
+            Code = normalizedCode,
+            Name = name,
+            Description = string.Empty,
+            CreatedAt = now,
+            UpdatedAt = now,
+            Status = ProjectStatus.Preparation
+        };
+
+        await _appState.ProjectRegistry.AddProjectAsync(project);
+
+        SelectedProject = project;
+        SetCurrentProject(project);
     }
 
     public void SetCurrentProject(ProjectInfo? project) => _appState.SetCurrentProject(project);
