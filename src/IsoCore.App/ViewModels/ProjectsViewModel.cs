@@ -40,9 +40,12 @@ public class ProjectsViewModel : ViewModelBase
             if (SetProperty(ref _selectedProject, value))
             {
                 _appState.SetCurrentProject(value);
+                OnPropertyChanged(nameof(HasSelectedProject));
             }
         }
     }
+
+    public bool HasSelectedProject => SelectedProject != null;
 
     public async Task LoadProjectsAsync()
     {

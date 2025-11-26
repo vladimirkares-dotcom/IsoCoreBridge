@@ -48,13 +48,13 @@
                             Content="Editovat projekt"
                             Style="{StaticResource IcbdButtonSecondaryStyle}"
                             Click="EditProjectButton_Click"
-                            IsEnabled="False"
+                            IsEnabled="{Binding HasSelectedProject}"
                             HorizontalAlignment="Stretch" />
                     <Button x:Name="DeleteProjectButton"
                             Content="Smazat projekt"
                             Style="{StaticResource IcbdButtonSecondaryStyle}"
                             Click="DeleteProjectButton_Click"
-                            IsEnabled="False"
+                            IsEnabled="{Binding HasSelectedProject}"
                             HorizontalAlignment="Stretch" />
                 </StackPanel>
             </StackPanel>
