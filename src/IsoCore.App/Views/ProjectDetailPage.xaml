@@ -92,31 +92,31 @@
                     </StackPanel>
                 </StackPanel>
 
-                <TextBlock Text="Stavební objekty"
-                           FontWeight="SemiBold"
-                           Margin="0,16,0,8"
-                           Style="{StaticResource IcbdSubheaderText}" />
-
+                <Border Style="{StaticResource IcbdDashboardCardBaseStyle}"
+                        Padding="{StaticResource IcbdPaddingL}">
+                    <StackPanel Spacing="{StaticResource IcbdSpacingSmall}">
+                        <TextBlock Text="Stavební objekty"
+                                   FontWeight="SemiBold"
+                                   Style="{StaticResource IcbdSubheaderText}" />
+                        <TextBlock Text="Zatím nejsou žádné stavební objekty."
+                                   Style="{StaticResource IcbdBodyTextBlockStyle}" />
+                    </StackPanel>
+                </Border>
                 <StackPanel Spacing="{StaticResource IcbdSpacingSmall}">
-                    <TextBlock Text="Zatím nejsou žádné stavební objekty."
-                               Opacity="0.7"
+                    <TextBlock Text="Výpočty a souhrny"
+                               FontWeight="SemiBold"
+                               Margin="0,16,0,0"
+                               Style="{StaticResource IcbdSubheaderText}" />
+                    <TextBlock Text="Výpočty, souhrny a přehledy budou doplněny později."
                                Style="{StaticResource IcbdBodyTextBlockStyle}" />
-                    <ItemsControl ItemsSource="{Binding CurrentProject.BuildingObjects, TargetNullValue={x:Null}, FallbackValue={x:Null}}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Grid ColumnDefinitions="Auto,*"
-                                      ColumnSpacing="{StaticResource IcbdSpacingMedium}">
-                                    <TextBlock Text="{Binding Code}"
-                                               Style="{StaticResource IcbdBodyText}"
-                                               TextTrimming="CharacterEllipsis" />
-                                    <TextBlock Grid.Column="1"
-                                               Text="{Binding Name}"
-                                               Style="{StaticResource IcbdBodyText}"
-                                               TextTrimming="CharacterEllipsis" />
-                                </Grid>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+                </StackPanel>
+                <StackPanel Spacing="{StaticResource IcbdSpacingSmall}">
+                    <TextBlock Text="Poznámky a dokumenty"
+                               FontWeight="SemiBold"
+                               Margin="0,16,0,0"
+                               Style="{StaticResource IcbdSubheaderText}" />
+                    <TextBlock Text="Poznámky, deník a dokumenty budou doplněny později."
+                               Style="{StaticResource IcbdBodyTextBlockStyle}" />
                 </StackPanel>
             </StackPanel>
         </Border>
