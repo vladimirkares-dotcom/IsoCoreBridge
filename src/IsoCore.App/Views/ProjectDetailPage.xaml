@@ -15,17 +15,46 @@
             <StackPanel Spacing="{StaticResource IcbdSpacingMedium}">
                 <Grid ColumnDefinitions="*,Auto"
                       ColumnSpacing="{StaticResource IcbdSpacingSmall}">
-                    <TextBlock Grid.Column="0"
-                               Text="{Binding ProjectDisplayName, FallbackValue=Detail projektu}"
-                               Style="{StaticResource IcbdSectionHeaderText}" />
-                    <Button Grid.Column="1"
-                            Content="Zpět"
-                            Style="{StaticResource IcbdButtonSecondaryStyle}"
-                            HorizontalAlignment="Right"
-                            Click="OnBackButtonClick" />
+                    <StackPanel Grid.Column="0"
+                                Orientation="Vertical"
+                                Spacing="{StaticResource IcbdSpacingSmall}">
+                        <TextBlock Text="{Binding ProjectDisplayName, FallbackValue=Detail projektu}"
+                                   Style="{StaticResource IcbdSectionHeaderText}" />
+                        <TextBlock Text="{Binding StatusText, FallbackValue=Stav: ?}"
+                                   Margin="0,4,0,0"
+                                   Opacity="0.8"
+                                   Style="{StaticResource IcbdBodyTextBlockStyle}" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1"
+                                Orientation="Vertical"
+                                HorizontalAlignment="Right"
+                                Spacing="{StaticResource IcbdSpacingSmall}">
+                        <StackPanel Orientation="Vertical"
+                                    HorizontalAlignment="Right"
+                                    Spacing="{StaticResource IcbdSpacingSmall}">
+                            <TextBlock TextAlignment="Right"
+                                       Style="{StaticResource IcbdBodyTextBlockStyle}">
+                                <Run Text="Vytvořeno: " />
+                                <Run Text="{Binding CreatedAtText, FallbackValue=—}" />
+                            </TextBlock>
+                            <TextBlock TextAlignment="Right"
+                                       Style="{StaticResource IcbdBodyTextBlockStyle}">
+                                <Run Text="Poslední změna: " />
+                                <Run Text="{Binding UpdatedAtText, FallbackValue=—}" />
+                            </TextBlock>
+                        </StackPanel>
+                        <Button Content="Zpět"
+                                Style="{StaticResource IcbdButtonSecondaryStyle}"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center"
+                                Click="OnBackButtonClicked" />
+                    </StackPanel>
                 </Grid>
 
                 <TextBlock Text="Základní informace"
+                           FontWeight="SemiBold"
+                           Margin="0,16,0,8"
                            Style="{StaticResource IcbdSubheaderText}" />
 
                 <StackPanel Spacing="{StaticResource IcbdSpacingSmall}">
@@ -61,26 +90,34 @@
                         <TextBlock Text="{Binding ProjectStatusText, FallbackValue=—}"
                                    Style="{StaticResource IcbdBodyText}" />
                     </StackPanel>
-
-                    <StackPanel Orientation="Horizontal"
-                                Spacing="{StaticResource IcbdSpacingMedium}">
-                        <TextBlock Text="Vytvořeno:"
-                                   Style="{StaticResource IcbdBodyText}" />
-                        <TextBlock Text="{Binding CurrentProject.CreatedAt, FallbackValue=—}"
-                                   Style="{StaticResource IcbdBodyText}" />
-                    </StackPanel>
-
-                    <StackPanel Orientation="Horizontal"
-                                Spacing="{StaticResource IcbdSpacingMedium}">
-                        <TextBlock Text="Poslední změna:"
-                                   Style="{StaticResource IcbdBodyText}" />
-                        <TextBlock Text="{Binding CurrentProject.UpdatedAt, FallbackValue=—}"
-                                   Style="{StaticResource IcbdBodyText}" />
-                    </StackPanel>
                 </StackPanel>
 
-                <TextBlock Text="TODO: Další sekce detailu projektu (SO, souhrny, poznámky)…"
+                <TextBlock Text="Stavební objekty"
+                           FontWeight="SemiBold"
+                           Margin="0,16,0,8"
                            Style="{StaticResource IcbdSubheaderText}" />
+
+                <StackPanel Spacing="{StaticResource IcbdSpacingSmall}">
+                    <TextBlock Text="Zatím nejsou žádné stavební objekty."
+                               Opacity="0.7"
+                               Style="{StaticResource IcbdBodyTextBlockStyle}" />
+                    <ItemsControl ItemsSource="{Binding CurrentProject.BuildingObjects, TargetNullValue={x:Null}, FallbackValue={x:Null}}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="Auto,*"
+                                      ColumnSpacing="{StaticResource IcbdSpacingMedium}">
+                                    <TextBlock Text="{Binding Code}"
+                                               Style="{StaticResource IcbdBodyText}"
+                                               TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Grid.Column="1"
+                                               Text="{Binding Name}"
+                                               Style="{StaticResource IcbdBodyText}"
+                                               TextTrimming="CharacterEllipsis" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
             </StackPanel>
         </Border>
     </Grid>
