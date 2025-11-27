@@ -16,7 +16,7 @@
                 <Grid ColumnDefinitions="*,Auto"
                       ColumnSpacing="{StaticResource IcbdSpacingSmall}">
                     <TextBlock Grid.Column="0"
-                               Text="Detail projektu"
+                               Text="{Binding ProjectDisplayName, FallbackValue=Detail projektu}"
                                Style="{StaticResource IcbdSectionHeaderText}" />
                     <Button Grid.Column="1"
                             Content="Zpět"
@@ -33,7 +33,7 @@
                                 Spacing="{StaticResource IcbdSpacingMedium}">
                         <TextBlock Text="Název projektu:"
                                    Style="{StaticResource IcbdBodyText}" />
-                        <TextBlock Text="{Binding CurrentProject.Name, FallbackValue=(není vybrán projekt)}"
+                        <TextBlock Text="{Binding ProjectName, FallbackValue=—}"
                                    Style="{StaticResource IcbdBodyText}" />
                     </StackPanel>
 
@@ -41,7 +41,7 @@
                                 Spacing="{StaticResource IcbdSpacingMedium}">
                         <TextBlock Text="Kód projektu:"
                                    Style="{StaticResource IcbdBodyText}" />
-                        <TextBlock Text="{Binding CurrentProject.Code, FallbackValue=(není vybrán projekt)}"
+                        <TextBlock Text="{Binding ProjectCode, FallbackValue=—}"
                                    Style="{StaticResource IcbdBodyText}" />
                     </StackPanel>
 
@@ -49,8 +49,16 @@
                                 Spacing="{StaticResource IcbdSpacingMedium}">
                         <TextBlock Text="Popis:"
                                    Style="{StaticResource IcbdBodyText}" />
-                        <TextBlock Text="{Binding CurrentProject.Description, FallbackValue=(není vybrán projekt)}"
+                        <TextBlock Text="{Binding ProjectDescription, FallbackValue=—}"
                                    TextWrapping="Wrap"
+                                   Style="{StaticResource IcbdBodyText}" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="{StaticResource IcbdSpacingMedium}">
+                        <TextBlock Text="Stav:"
+                                   Style="{StaticResource IcbdBodyText}" />
+                        <TextBlock Text="{Binding ProjectStatusText, FallbackValue=—}"
                                    Style="{StaticResource IcbdBodyText}" />
                     </StackPanel>
 
@@ -58,7 +66,7 @@
                                 Spacing="{StaticResource IcbdSpacingMedium}">
                         <TextBlock Text="Vytvořeno:"
                                    Style="{StaticResource IcbdBodyText}" />
-                        <TextBlock Text="{Binding CurrentProject.CreatedAt, FallbackValue=(neznámé)}"
+                        <TextBlock Text="{Binding CurrentProject.CreatedAt, FallbackValue=—}"
                                    Style="{StaticResource IcbdBodyText}" />
                     </StackPanel>
 
@@ -66,7 +74,7 @@
                                 Spacing="{StaticResource IcbdSpacingMedium}">
                         <TextBlock Text="Poslední změna:"
                                    Style="{StaticResource IcbdBodyText}" />
-                        <TextBlock Text="{Binding CurrentProject.UpdatedAt, FallbackValue=(neznámé)}"
+                        <TextBlock Text="{Binding CurrentProject.UpdatedAt, FallbackValue=—}"
                                    Style="{StaticResource IcbdBodyText}" />
                     </StackPanel>
                 </StackPanel>
