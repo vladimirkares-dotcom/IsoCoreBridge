@@ -182,3 +182,10 @@
 - UX polish: compact two-row list item layout (code + name, status); Edit/Delete auto-enabled/disabled based on selection.
 - Builds on F7-Final (dispatcher-safe PropertyChanged + ObservableCollection changes); COMException 0x8001010E fixes remain intact.
 
+
+### F9 - Project detail (ProjectDetailPage)
+
+- Refactored bindings to use ProjectDetailPageViewModel properties instead of AppState.CurrentProject directly (ProjectDisplayName, ProjectCode, ProjectName, StatusText, Description, CreatedAtText, UpdatedAtText).
+- Header rebuilt as a two-column grid: left shows project title + short status; right stacks created/updated timestamps with the existing secondary "Zpět" button.
+- Introduced three content sections: read-only "Základní informace"; a placeholder "Stavební objekty" border card ready for a future BuildingObject list; and text-only placeholders for "Výpočty a souhrny" plus "Poznámky a dokumenty" for future calculations/reports/diary and documents.
+- Page remains read-only but is fully wired via the viewmodel/AppState and ready for future CRUD over building objects and calculation features.

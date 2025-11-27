@@ -29,6 +29,7 @@ Last updated: 2025-11-24
 - SETTINGS + ChangePassword: hotovo (snapshot aktuálního uživatele, změna hesla, stránky navázané na VM).
 - PROJECTS (P-balíček): P1-P5 hotovo (async načtení, výběr ↔ AppState sync, základní hinty/akce na ProjectsPage); P6 (UI/UX pro navigaci/přehled) zbývá. Projekty jsou async-loaded přes ProjectsStorageService + ProjectRegistry (dispatcher-safe); UI má kompaktní dvouřádkový layout seznamu (kód + název, status), dialog pro založení projektu (auto výběr), dialog pro editaci (validace unikátního kódu), dialog pro smazání s potvrzením, a double-click open na řádku seznamu. Edit/Delete jsou auto-enabled/disabled dle výběru.
 - DASHBOARD (D-balíček): D1–D6 hotovo (analýza, data, navigace, shell) + D6–P1 až D6–P5 hotovo (finální moderní vizuální design ve stylu VL4D, karty, typografie, mezery); dashboard je 100 % dokončený.
+- PROJECT DETAIL (F9): ProjectDetailPageViewModel poskytuje odvozen?, read-only vlastnosti z AppState.CurrentProject (titulek, k?d, n?zev, stavov? text, popis, form?tovan? created/updated). Header je dvousloupcov? (titulek+stav vlevo, timestampy + tla??tko "Zp?t" vpravo). Obsah: sekce Z?kladn? informace; placeholder karta "Stavebn? objekty" (p?ipraveno na BuildingObjectInfo list); textov? placeholdery pro "V?po?ty a souhrny" a "Pozn?mky a dokumenty". Str?nka je stabiln?, read-only, p?ipraven? pro budouc? SO CRUD, v?po?ty/den?k/exporty.
 
 ## Completed migration steps (chronological)
 - Migrated `RoleService` and `IRoleService` (offline role model).
@@ -67,3 +68,6 @@ Remaining tasks = only visual polish, postponed to final UI pass.
 **F7 status:** Done / stable — threading/dispatcher fixes around Projects & Users; projects storage abstraction added; project creation dialog + double-click open implemented.
 
 **F8 status:** Done / stable — Projects CRUD on dispatcher-safe infra (create/edit/delete dialogs with validation, async load via ProjectsStorageService + ProjectRegistry, compact list layout, selection-based button enablement).
+
+
+**F9 status:** Done / stable - ProjectDetailPage read-only detail view (viewmodel-backed header, Zakladni informace, Stavebni objekty placeholder card, future sections for vypocty/souhrny and poznamky/dokumenty).
