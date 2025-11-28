@@ -6,7 +6,12 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:views="using:IsoCore.App.Views"
+    xmlns:converters="using:IsoCore.App.Converters"
     mc:Ignorable="d">
+
+    <views:MenuPage.Resources>
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </views:MenuPage.Resources>
 
     <Grid Background="{StaticResource IcbdWindowBackgroundBrush}"
           Style="{StaticResource IcbdPageGrid}">
@@ -92,16 +97,221 @@
                     </StackPanel>
                 </StackPanel>
 
-                <Border Style="{StaticResource IcbdDashboardCardBaseStyle}"
-                        Padding="{StaticResource IcbdPaddingL}">
-                    <StackPanel Spacing="{StaticResource IcbdSpacingSmall}">
-                        <TextBlock Text="Stavební objekty"
-                                   FontWeight="SemiBold"
-                                   Style="{StaticResource IcbdSubheaderText}" />
-                        <TextBlock Text="Zatím nejsou žádné stavební objekty."
-                                   Style="{StaticResource IcbdBodyTextBlockStyle}" />
-                    </StackPanel>
-                </Border>
+                <Grid Margin="0,24,0,0"
+                      ColumnSpacing="24">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Border Grid.Column="0"
+                            Style="{StaticResource IcbdDashboardCardBaseStyle}"
+                            Padding="{StaticResource IcbdPaddingL}">
+                        <StackPanel Spacing="{StaticResource IcbdSpacingSmall}">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="Stavební objekty"
+                                           FontSize="18"
+                                           FontWeight="SemiBold" />
+                                <StackPanel Orientation="Horizontal"
+                                            Spacing="8">
+                                    <Button Content="Nový"
+                                            Command="{Binding AddBuildingObjectCommand}" />
+                                    <Button Content="Upravit"
+                                            Command="{Binding EditBuildingObjectCommand}" />
+                                    <Button Content="Smazat"
+                                            Command="{Binding DeleteBuildingObjectCommand}" />
+                                </StackPanel>
+                                <ListView ItemsSource="{Binding BuildingObjects}"
+                                          SelectedItem="{Binding SelectedBuildingObject, Mode=TwoWay}"
+                                          IsItemClickEnabled="False">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Padding="8"
+                                                        Spacing="2">
+                                                <TextBlock Text="{Binding Code}"
+                                                           FontWeight="SemiBold"
+                                                           FontSize="14" />
+                                                <TextBlock Text="{Binding Name}"
+                                                           FontSize="12"
+                                                           Opacity="0.8"
+                                                           TextTrimming="CharacterEllipsis"
+                                                           MaxLines="1" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Column="1"
+                            Style="{StaticResource IcbdDashboardCardBaseStyle}"
+                            Padding="{StaticResource IcbdPaddingL}">
+                        <StackPanel>
+                            <StackPanel Visibility="{Binding HasNoSelectedBuildingObject, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <TextBlock Text="Přehled stavebních objektů" />
+                                <TextBlock Text="{Binding TotalBuildingObjects, FallbackValue='-'}" />
+                                <TextBlock Text="Celková výměra: -" />
+                                <TextBlock Text="Vyberte SO vlevo pro detail."
+                                           TextWrapping="Wrap" />
+                            </StackPanel>
+                            <StackPanel Visibility="{Binding HasSelectedBuildingObject, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <StackPanel Spacing="12">
+                                    <StackPanel Spacing="4">
+                                        <TextBlock Text="Detail stavebního objektu" />
+                                        <TextBlock Text="{Binding SelectedBuildingObject.Code, FallbackValue='SO ?'}"
+                                                   TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Text="{Binding SelectedBuildingObject.Name, FallbackValue='(bez názvu)'}"
+                                                   TextTrimming="CharacterEllipsis"
+                                                   Opacity="0.7" />
+
+                                        <Grid ColumnSpacing="12"
+                                              RowSpacing="4">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
+
+                                            <TextBlock Text="Typ konstrukce:"
+                                                       Grid.Row="0"
+                                                       Grid.Column="0" />
+                                            <TextBlock Text="{Binding SelectedBuildingObject.StructureType}"
+                                                       Grid.Row="0"
+                                                       Grid.Column="1" />
+
+                                            <TextBlock Text="Krytí:"
+                                                       Grid.Row="1"
+                                                       Grid.Column="0" />
+                                            <TextBlock Text="{Binding SelectedBuildingObject.CoverType}"
+                                                       Grid.Row="1"
+                                                       Grid.Column="1" />
+
+                                            <TextBlock Text="Stav:"
+                                                       Grid.Row="2"
+                                                       Grid.Column="0" />
+                                            <TextBlock Text="{Binding SelectedBuildingObject.Status}"
+                                                       Grid.Row="2"
+                                                       Grid.Column="1" />
+                                        </Grid>
+                                    </StackPanel>
+
+                                    <StackPanel Spacing="4">
+                                        <TextBlock Text="Izolace a technologie" />
+                                        <Grid ColumnSpacing="12"
+                                              RowSpacing="4">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
+
+                                            <TextBlock Text="Příprava:"
+                                                       Grid.Row="0"
+                                                       Grid.Column="0" />
+                                            <TextBlock Text="{Binding SelectedBuildingObject.PrepType}"
+                                                       Grid.Row="0"
+                                                       Grid.Column="1" />
+
+                                            <TextBlock Text="NAIP:"
+                                                       Grid.Row="1"
+                                                       Grid.Column="0" />
+                                            <TextBlock Text="{Binding SelectedBuildingObject.HasNaip}"
+                                                       Grid.Row="1"
+                                                       Grid.Column="1" />
+
+                                            <TextBlock Text="Poznámka:"
+                                                       Grid.Row="2"
+                                                       Grid.Column="0" />
+                                            <TextBlock Text="{Binding SelectedBuildingObject.Notes, FallbackValue='(bez poznámky)'}"
+                                                       Grid.Row="2"
+                                                       Grid.Column="1"
+                                                       TextWrapping="Wrap" />
+                                        </Grid>
+                                    </StackPanel>
+
+                                    <StackPanel Spacing="4">
+                                        <TextBlock Text="Plochy a zkoušky" />
+                                        <Grid ColumnSpacing="12"
+                                              RowSpacing="4">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
+
+                                            <TextBlock Text="Mostovka (BoQ):"
+                                                       Grid.Row="0"
+                                                       Grid.Column="0" />
+                                            <TextBlock Text="{Binding SelectedBuildingObject.DeckAreaBoq}"
+                                                       Grid.Row="0"
+                                                       Grid.Column="1" />
+
+                                            <TextBlock Text="Římsy (BoQ):"
+                                                       Grid.Row="1"
+                                                       Grid.Column="0" />
+                                            <TextBlock Text="{Binding SelectedBuildingObject.RailingAreaBoq}"
+                                                       Grid.Row="1"
+                                                       Grid.Column="1" />
+
+                                            <TextBlock Text="Ostatní (BoQ):"
+                                                       Grid.Row="2"
+                                                       Grid.Column="0" />
+                                            <TextBlock Text="{Binding SelectedBuildingObject.OtherAreaBoq}"
+                                                       Grid.Row="2"
+                                                       Grid.Column="1" />
+                                        </Grid>
+
+                                        <Grid ColumnSpacing="12"
+                                              RowSpacing="4">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
+
+                                            <TextBlock Text="Požadované zkoušky:"
+                                                       Grid.Row="0"
+                                                       Grid.Column="0" />
+                                            <TextBlock Text="{Binding SelectedBuildingObject.RequiredTestCount}"
+                                                       Grid.Row="0"
+                                                       Grid.Column="1" />
+
+                                            <TextBlock Text="Provedené zkoušky:"
+                                                       Grid.Row="1"
+                                                       Grid.Column="0" />
+                                            <TextBlock Text="{Binding SelectedBuildingObject.PerformedTestCount}"
+                                                       Grid.Row="1"
+                                                       Grid.Column="1" />
+                                        </Grid>
+                                    </StackPanel>
+
+                                    <StackPanel Spacing="4">
+                                        <TextBlock Text="Nesoulad v podkladech" />
+                                        <TextBlock Text="{Binding SelectedBuildingObject.HasBoqDiscrepancy}" />
+                                        <TextBlock Text="{Binding SelectedBuildingObject.BoqVsRealDifferenceNote, FallbackValue='(bez zaznamenaného nesouladu v podkladech)'}"
+                                                   TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Grid>
                 <StackPanel Spacing="{StaticResource IcbdSpacingSmall}">
                     <TextBlock Text="Výpočty a souhrny"
                                FontWeight="SemiBold"

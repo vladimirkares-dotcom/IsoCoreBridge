@@ -165,6 +165,20 @@
         <Setter Property="Foreground" Value="{StaticResource IcbdTextPrimaryBrush}" />
     </Style>
 
+    <Style x:Key="IcbdBody" TargetType="TextBlock">
+        <!-- temporary placeholder style -->
+    </Style>
+
+    <Style x:Key="IcbdHeadlineM" TargetType="TextBlock">
+        <!-- temporary placeholder style -->
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <Style x:Key="IcbdTitleM" TargetType="TextBlock">
+        <!-- temporary placeholder style -->
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+
     <Style x:Key="IcbdBodyTextBlockStyle"
            TargetType="TextBlock">
         <Setter Property="FontSize" Value="14" />
