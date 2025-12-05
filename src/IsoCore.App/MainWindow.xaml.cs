@@ -22,6 +22,6 @@ public sealed partial class MainWindow : Window
         var hwnd = WindowNative.GetWindowHandle(this);
         Win32.ShowWindow(hwnd, Win32.SW_MAXIMIZE);
         Title = "IsoCoreBridge";
-        RootFrame.Navigate(typeof(MainShellPage));
+        Content = new MainShellPage();
     }
 }

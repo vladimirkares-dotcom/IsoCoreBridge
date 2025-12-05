@@ -185,6 +185,55 @@
         <Setter Property="Foreground" Value="{StaticResource IcbdTextSecondaryBrush}" />
     </Style>
 
+    <Style x:Key="IcbdBodyEllipsisMutedText"
+           TargetType="TextBlock"
+           BasedOn="{StaticResource IcbdBodyTextBlockStyle}">
+        <Setter Property="Opacity" Value="0.8" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
+
+    <Style x:Key="IcbdBodyStatusText"
+           TargetType="TextBlock"
+           BasedOn="{StaticResource IcbdBodyTextBlockStyle}">
+        <Setter Property="Margin" Value="0,4,0,0" />
+        <Setter Property="Opacity" Value="0.8" />
+    </Style>
+
+    <Style x:Key="IcbdBodyWrapText"
+           TargetType="TextBlock"
+           BasedOn="{StaticResource IcbdBodyTextBlockStyle}">
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <Style x:Key="IcbdBodyEllipsisText"
+           TargetType="TextBlock"
+           BasedOn="{StaticResource IcbdBodyTextBlockStyle}">
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
+
+    <Style x:Key="IcbdBodyEllipsisSubtleText"
+           TargetType="TextBlock"
+           BasedOn="{StaticResource IcbdBodyTextBlockStyle}">
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+        <Setter Property="Opacity" Value="0.7" />
+    </Style>
+
+    <Style x:Key="IcbdEmptyStateText"
+           TargetType="TextBlock"
+           BasedOn="{StaticResource IcbdBodyTextBlockStyle}">
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Opacity" Value="0.6" />
+        <Setter Property="TextAlignment" Value="Center" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <Style x:Key="IcbdRightAlignedBodyText"
+           TargetType="TextBlock"
+           BasedOn="{StaticResource IcbdBodyTextBlockStyle}">
+        <Setter Property="TextAlignment" Value="Right" />
+    </Style>
+
     <Style x:Key="IcbdBodyMutedTextBlockStyle"
            TargetType="TextBlock"
            BasedOn="{StaticResource IcbdBodyTextBlockStyle}">
@@ -232,6 +281,11 @@
         <Setter Property="RowSpacing" Value="4"/>
     </Style>
 
+    <Style x:Key="IcbdHeaderActionGrid" TargetType="Grid">
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
     <Style x:Key="IcbdDashboardDateText" TargetType="TextBlock">
         <Setter Property="Margin" Value="0,4,0,0"/>
         <Setter Property="FontSize" Value="14"/>
@@ -242,6 +296,16 @@
         <Setter Property="HorizontalAlignment" Value="Right"/>
         <Setter Property="VerticalAlignment" Value="Top"/>
         <Setter Property="Spacing" Value="{StaticResource IcbdSpacingSmall}"/>
+    </Style>
+
+    <Style x:Key="IcbdRightAlignedStackPanel" TargetType="StackPanel">
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+    </Style>
+
+    <Style x:Key="IcbdRightAlignedActionRow" TargetType="StackPanel">
+        <Setter Property="Orientation" Value="Horizontal"/>
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+        <Setter Property="Spacing" Value="{StaticResource IcbdSpacingMedium}"/>
     </Style>
 
     <Style x:Key="IcbdHeaderCaptionText" TargetType="TextBlock" BasedOn="{StaticResource IcbdCaptionText}">
@@ -275,6 +339,14 @@
         <Setter Property="Opacity" Value="0.8"/>
     </Style>
 
+    <Style x:Key="IcbdSubheaderSectionSpacer" TargetType="TextBlock" BasedOn="{StaticResource IcbdSubheaderText}">
+        <Setter Property="Margin" Value="0,16,0,0"/>
+    </Style>
+
+    <Style x:Key="IcbdSubheaderTight" TargetType="TextBlock" BasedOn="{StaticResource IcbdSubheaderText}">
+        <Setter Property="Margin" Value="0,0,0,8"/>
+    </Style>
+
     <Style x:Key="IcbdListItemContainer" TargetType="StackPanel">
         <Setter Property="Padding" Value="6"/>
     </Style>
@@ -285,11 +357,32 @@
         <Setter Property="FontWeight" Value="SemiBold"/>
     </Style>
 
+    <Style x:Key="IcbdListItemTitleEllipsis" TargetType="TextBlock" BasedOn="{StaticResource IcbdListItemTitleText}">
+        <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+    </Style>
+
     <Style x:Key="IcbdListItemCaptionText" TargetType="TextBlock">
         <Setter Property="Foreground" Value="{StaticResource IcbdPrimaryTextBrush}"/>
         <Setter Property="FontSize" Value="12"/>
         <Setter Property="FontWeight" Value="Normal"/>
         <Setter Property="Opacity" Value="0.7"/>
+    </Style>
+
+    <Style x:Key="IcbdListItemCodeText" TargetType="TextBlock" BasedOn="{StaticResource IcbdListItemCaptionText}">
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+    </Style>
+
+    <Style x:Key="IcbdListItemMediumTitle" TargetType="TextBlock" BasedOn="{StaticResource IcbdBodyTextBlockStyle}">
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+    </Style>
+
+    <Style x:Key="IcbdListItemSecondaryLine" TargetType="TextBlock" BasedOn="{StaticResource IcbdBodyTextBlockStyle}">
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Opacity" Value="0.8"/>
+        <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+        <Setter Property="MaxLines" Value="1"/>
     </Style>
 
     <Style x:Key="IcbdRightAlignedPrimaryButton" TargetType="Button" BasedOn="{StaticResource IcbdPrimaryButton}">
@@ -303,6 +396,12 @@
         <Setter Property="Padding" Value="{StaticResource Thickness.IcbdPaddingM}" />
         <Setter Property="BorderBrush" Value="{StaticResource IcbdBorderSubtleBrush}" />
         <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
+    <Style x:Key="IcbdDashboardCardStretchStyle"
+           TargetType="Border"
+           BasedOn="{StaticResource IcbdDashboardCardBaseStyle}">
+        <Setter Property="VerticalAlignment" Value="Stretch" />
     </Style>
 
     <Style x:Key="IcbdDashboardCardPrimaryStyle"
@@ -345,6 +444,11 @@
         <Setter Property="Margin" Value="0,0,0,12"/>
         <Setter Property="CornerRadius" Value="6"/>
         <Setter Property="FontFamily" Value="{StaticResource IcbdDefaultFontFamily}"/>
+    </Style>
+
+    <Style x:Key="IcbdInputTextMultiline" TargetType="TextBox" BasedOn="{StaticResource IcbdInputText}">
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="AcceptsReturn" Value="True"/>
     </Style>
 
     <Style x:Key="IcbdInputPassword" TargetType="PasswordBox">
@@ -411,6 +515,25 @@
         <Setter Property="BorderBrush" Value="{StaticResource IcbdBorderStrongBrush}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CornerRadius" Value="{StaticResource CornerRadius.IcbdM}" />
+    </Style>
+
+    <Style x:Key="IcbdPrimaryButtonFullWidth"
+           TargetType="Button"
+           BasedOn="{StaticResource IcbdPrimaryButton}">
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+    </Style>
+
+    <Style x:Key="IcbdSecondaryButtonFullWidth"
+           TargetType="Button"
+           BasedOn="{StaticResource IcbdButtonSecondaryStyle}">
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+    </Style>
+
+    <Style x:Key="IcbdSecondaryButtonRightAligned"
+           TargetType="Button"
+           BasedOn="{StaticResource IcbdButtonSecondaryStyle}">
+        <Setter Property="HorizontalAlignment" Value="Right" />
+        <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
     <Style x:Key="IcbdWindowChromeButtonStyle" TargetType="Button">

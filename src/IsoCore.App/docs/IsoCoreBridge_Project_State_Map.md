@@ -14,6 +14,10 @@ Last updated: 2025-11-24
 - **Login wiring**: `LoginPage` code-behind owns `LoginViewModel`, subscribes to `LoginSucceeded`, and navigates to `MainPage` via the app’s main frame.
 - **Splash/auth gate**: `SplashViewModel.NavigateFromSplash()` ensures `App.MainWindow.Content` is a `Frame`, then routes to `LoginPage` if `App.AppState.CurrentUser` is null or to `MainPage` otherwise; guarded by a `_navigationTriggered` flag so it runs once after startup progress completes.
 
+## Navigation system status
+- `PageRoute` integrated in `MainShellPage`; `NavigateTo(PageRoute route)` centralizes routing.
+- Basic routes (Dashboard / Projects / SettingsUsers) stable; click handlers now funnel through `NavigateTo`.
+
 ## ViewModels & UI structure
 - Present: `DashboardViewModel`, `ProjectsViewModel`, `OverviewsViewModel`, `UsersViewModel`, `UserDetailViewModel`, `ChangePasswordViewModel`, `ProjectDetailPageViewModel`, `SettingsPageViewModel`, `SplashViewModel` (manages progress and one-time navigation via `NavigateFromSplash`), `LoginViewModel` (backend-only, trims username, validates non-empty username/password, uses `IsBusy` to prevent concurrent logins, raises `LoginSucceeded`), helper `RoleOption`, base `ViewModelBase`.
 - UI/XAML pages exist and build cleanly, but this document does not track UI layout.
@@ -24,8 +28,11 @@ Last updated: 2025-11-24
 - `ProjectsViewModel` exposes `Projects` (`ObservableCollection<ProjectInfo>`), `IsBusy`, `SelectedProject` synced s `AppState.CurrentProject` (setter volá `_appState.SetCurrentProject`, poslouchá `CurrentProjectChanged`), `LoadProjectsAsync()` načítá z `ProjectRegistry` s hlídáním `IsBusy`; `ProjectsPage.xaml` binduje `ItemsSource`/`SelectedItem`, `SelectionChanged` volá code-behind k nastavení current projektu, `Loaded` spouští `LoadProjectsAsync`. Project mutations are dispatcher-safe via ProjectRegistry.
 - `DashboardViewModel` napojen na `AppState` (CurrentProject, CurrentUser, ProjectRegistry), drží `Projects`, statistiky (Total/Preparation/Execution/Completed), texty pro aktuální projekt a uživatele; `DashboardPage` poslouchá změny AppState a zobrazuje karty progresu/aktuálního projektu/seznamu projektů.
 
+## UI / Design – Left menu
+- B-3b implemented: interface shows only „Hlavní“ (Dashboard, Projekty, Přehledy) and „Nastavení“ (Uživatelé + disabled placeholders); sections „Data“, „Kontroling“, „Ceníky“, „Pomůcky“ are commented out.
+
 ## Modulový stav
-- USERS (S-balíček): hotovo (uživatelé, CRUD, hesla, UserFormError binding).
+- USERS (S-balíček): hotovo (uživatelé, CRUD, hesla, UserFormError binding). A-2a: CoreCompanyName spravuje AppState; EmploymentType logika stabilní. Known issue: nového uživatele nelze vytvořit – pending analýza (pozdější krok).
 - SETTINGS + ChangePassword: hotovo (snapshot aktuálního uživatele, změna hesla, stránky navázané na VM).
 - PROJECTS (P-balíček): P1-P5 hotovo (async načtení, výběr ↔ AppState sync, základní hinty/akce na ProjectsPage); P6 (UI/UX pro navigaci/přehled) zbývá. Projekty jsou async-loaded přes ProjectsStorageService + ProjectRegistry (dispatcher-safe); UI má kompaktní dvouřádkový layout seznamu (kód + název, status), dialog pro založení projektu (auto výběr), dialog pro editaci (validace unikátního kódu), dialog pro smazání s potvrzením, a double-click open na řádku seznamu. Edit/Delete jsou auto-enabled/disabled dle výběru.
 - DASHBOARD (D-balíček): D1–D6 hotovo (analýza, data, navigace, shell) + D6–P1 až D6–P5 hotovo (finální moderní vizuální design ve stylu VL4D, karty, typografie, mezery); dashboard je 100 % dokončený.
@@ -71,3 +78,5 @@ Remaining tasks = only visual polish, postponed to final UI pass.
 
 
 **F9 status:** Done / stable - ProjectDetailPage read-only detail view (viewmodel-backed header, Zakladni informace, Stavebni objekty placeholder card, future sections for vypocty/souhrny and poznamky/dokumenty).
+
+**G-block status (ProjectDetail/BuildingObjects):** Implemented – first iteration done, edit UI pending. G1-G5 wired: ProjectDetailPage bound to ProjectDetailPageViewModel and AppState (header + timestamps); BuildingObjects list bound to CurrentProject.BuildingObjects with selection-driven detail panel; command state (HasBuildingObjects/HasNoBuildingObjects, CanExecute) drives button enablement; AddBuildingObjectCommand creates a new BuildingObjectInfo (default name "Nový stavební objekt", Status=Draft, HasNaip=false), attaches it to the current project and selects it; DeleteBuildingObjectCommand removes the selected object from the current project/VM collection and updates selection (next/prev/null). EditBuildingObjectCommand exists but real edit UX will come in G6. Known UX note: after create, focus shifts to detail panel making the project context less visible; to be refined with the edit UI in G6.

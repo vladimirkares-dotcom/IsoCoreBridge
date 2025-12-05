@@ -67,21 +67,54 @@ public class ProjectRegistry
 
     public async Task UpdateProjectAsync(ProjectInfo project)
     {
-        if (!Projects.Contains(project))
+        if (project == null)
         {
             return;
         }
 
-        await RunOnDispatcherAsync(() =>
+        if (!Projects.Contains(project))
         {
-            var index = Projects.IndexOf(project);
-            if (index >= 0)
+            await RunOnDispatcherAsync(() =>
             {
-                Projects[index] = project;
-            }
-        });
+                var existing = Projects.FirstOrDefault(p => string.Equals(p.Id, project.Id, StringComparison.OrdinalIgnoreCase)
+                                                            || string.Equals(p.ProjectCode, project.ProjectCode, StringComparison.OrdinalIgnoreCase));
+                if (existing != null)
+                {
+                    var index = Projects.IndexOf(existing);
+                    if (index >= 0)
+                    {
+                        Projects[index] = project;
+                    }
+                }
+                else
+                {
+                    Projects.Add(project);
+                }
+            });
+        }
+        else
+        {
+            await RunOnDispatcherAsync(() =>
+            {
+                var index = Projects.IndexOf(project);
+                if (index >= 0)
+                {
+                    Projects[index] = project;
+                }
+            });
+        }
 
         await SaveToStorageAsync();
+    }
+
+    public ProjectInfo? FindById(string id)
+    {
+        if (string.IsNullOrWhiteSpace(id))
+        {
+            return null;
+        }
+
+        return Projects.FirstOrDefault(p => string.Equals(p.Id, id, StringComparison.OrdinalIgnoreCase));
     }
 
     public ProjectInfo? FindByCode(string code)

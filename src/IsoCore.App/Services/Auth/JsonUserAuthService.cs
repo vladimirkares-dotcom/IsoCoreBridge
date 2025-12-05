@@ -253,6 +253,7 @@ public class JsonUserAuthService : IUserAuthService
             existing.MustChangePassword = updatedUser.MustChangePassword;
             existing.FirstName = updatedUser.FirstName;
             existing.LastName = updatedUser.LastName;
+            existing.EmploymentType = updatedUser.EmploymentType;
             existing.Login = string.IsNullOrWhiteSpace(updatedUser.Login) ? newKey : updatedUser.Login.Trim();
             existing.Username = newKey;
 
@@ -574,6 +575,7 @@ public class JsonUserAuthService : IUserAuthService
             Role = source.Role,
             IsActive = source.IsActive,
             Note = source.Note,
+            EmploymentType = source.EmploymentType,
             MustChangePassword = source.MustChangePassword,
             PasswordHash = source.PasswordHash,
             PasswordSalt = source.PasswordSalt

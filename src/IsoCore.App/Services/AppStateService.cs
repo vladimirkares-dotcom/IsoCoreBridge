@@ -10,13 +10,16 @@ public interface IAppStateService
     DateOnly CurrentDate { get; }
     ProjectRegistry ProjectRegistry { get; }
     BuildingObjectInfo? CurrentBuildingObject { get; }
+    BuildingObjectEditSession? CurrentBuildingObjectEditSession { get; set; }
     UserAccount? CurrentUser { get; }
     bool IsAdmin { get; }
+    string CoreCompanyName { get; }
     string? PendingPasswordChangeUsername { get; }
 
     event EventHandler<ProjectInfo?>? CurrentProjectChanged;
     event EventHandler<DateOnly>? CurrentDateChanged;
     event EventHandler<BuildingObjectInfo?>? CurrentBuildingObjectChanged;
+    event EventHandler? BuildingObjectEditSessionChanged;
     event EventHandler? CurrentUserChanged;
 
     void SetCurrentProject(ProjectInfo? project);
@@ -34,6 +37,7 @@ public class AppStateService : IAppStateService
     private ProjectInfo? _currentProject;
     private DateOnly _currentDate = DateOnly.FromDateTime(DateTime.Today);
     private BuildingObjectInfo? _currentBuildingObject;
+    private BuildingObjectEditSession? _currentBuildingObjectEditSession;
     private UserAccount? _currentUser;
     private string? _pendingPasswordChangeUsername;
 
@@ -46,12 +50,26 @@ public class AppStateService : IAppStateService
     public DateOnly CurrentDate => _currentDate;
     public ProjectRegistry ProjectRegistry => _projectRegistry;
     public BuildingObjectInfo? CurrentBuildingObject => _currentBuildingObject;
+    public BuildingObjectEditSession? CurrentBuildingObjectEditSession
+    {
+        get => _currentBuildingObjectEditSession;
+        set
+        {
+            if (!Equals(_currentBuildingObjectEditSession, value))
+            {
+                _currentBuildingObjectEditSession = value;
+                BuildingObjectEditSessionChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+    }
     public UserAccount? CurrentUser => _currentUser;
     public bool IsAdmin => string.Equals(_currentUser?.Role, Roles.Administrator, StringComparison.OrdinalIgnoreCase);
+    public string CoreCompanyName { get; } = "Stavby mostů a.s.";
 
     public event EventHandler<ProjectInfo?>? CurrentProjectChanged;
     public event EventHandler<DateOnly>? CurrentDateChanged;
     public event EventHandler<BuildingObjectInfo?>? CurrentBuildingObjectChanged;
+    public event EventHandler? BuildingObjectEditSessionChanged;
     public event EventHandler? CurrentUserChanged;
 
     public void SetCurrentProject(ProjectInfo? project)

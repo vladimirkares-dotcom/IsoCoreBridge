@@ -33,6 +33,11 @@
 - Build/startup: `dotnet build .\src\IsoCore.App\IsoCore.App.csproj -c Debug -r win-x64` succeeds; app starts without crashes in VS/Debug x64 after auth hardening.
 - Stav balĂ­ÄŤkĹŻ: USERS (S-balĂ­ÄŤek) â€“ 100 % hotovo; SETTINGS + ChangePassword â€“ 100 % hotovo; PROJECTS (P-balĂ­ÄŤek) â€“ P1â€“P5 hotovo (load + vĂ˝bÄ›r + AppState sync, ProjectsPage hinty/akce), P6 UI/UX zbĂ˝vĂˇ; DASHBOARD (D-balĂ­ÄŤek) â€“ D1â€“D6 hotovo (analĂ˝za + data + navigace + kontrola funkÄŤnĂ­ parity, inline styly v Theme.xaml, zĂˇkladnĂ­ grid/spacing layout polish v D5, start shell v D6 â€“ aplikace startuje pĹ™Ă­mo do DashboardPage, Ĺˇablona Hello World odstranÄ›na); D6+ (finĂˇlnĂ­ modernĂ­ vizuĂˇlnĂ­ design ve stylu VL4D v krocĂ­ch D6â€“P1 aĹľ D6â€“P5) hotovo â€“ dashboard je plnÄ› doladÄ›nĂ˝. LEFT NAV (E1) â€“ P1â€“P5 hotovo (struktura + mezery, typografie/layout, pokus o pokroÄŤilĂ˝ template v E1â€“P3/E1â€“P4 nĂˇslednÄ› rollback; E1â€“P5 stabilizovĂˇno jednoduchĂ˝m stylem, pokroÄŤilĂ© efekty pĹ™esunuty do budoucĂ­ho bloku).
 
+## Recent updates (Completed)
+- **PageRoute refactor (MainShellPage):** `MainShellPage.xaml.cs` now routes via `NavigateTo(PageRoute route)`; Dashboard/Projects/Users click handlers call `NavigateTo`; redundant direct navigation removed; `_currentRoute` added to track state.
+- **B-3b Left Navigation Cleanup:** Left menu shows only „Hlavní“ (Dashboard, Projekty, Přehledy) and „Nastavení“ (Uživatelé + disabled placeholders); sections „Data“, „Kontroling“, „Ceníky“, „Pomůcky“ are wrapped in a single XAML comment block.
+- **A-2a CoreCompanyName → AppState:** Added `string CoreCompanyName { get; }` to `IAppStateService`, implemented in `AppStateService` with default "Stavby mostů a.s."; removed the hardcoded constant from `UsersViewModel`; `EmploymentType` now uses `_appState.CoreCompanyName`.
+
 ## D6â€“P5 â€“ Final VL4D Balance Pass (Completed)
 
 **Changes performed:**
@@ -189,3 +194,9 @@
 - Header rebuilt as a two-column grid: left shows project title + short status; right stacks created/updated timestamps with the existing secondary "Zpět" button.
 - Introduced three content sections: read-only "Základní informace"; a placeholder "Stavební objekty" border card ready for a future BuildingObject list; and text-only placeholders for "Výpočty a souhrny" plus "Poznámky a dokumenty" for future calculations/reports/diary and documents.
 - Page remains read-only but is fully wired via the viewmodel/AppState and ready for future CRUD over building objects and calculation features.
+### G-series - ProjectDetail/BuildingObjects (current)
+
+- G1-G3: ProjectDetailPage binds the project header (name/code/status/description + created/updated timestamps) and the BuildingObjects list to ProjectDetailPageViewModel backed by AppState.CurrentProject; selection drives the right-hand detail panel and button enablement via HasBuildingObjects/HasNoBuildingObjects and command CanExecute.
+- G4: AddBuildingObjectCommand creates a new BuildingObjectInfo (default name "Nový stavební objekt", Status = Draft, HasNaip = false), attaches it to the current project's collection, and selects it so the detail panel shows the new item.
+- G5: DeleteBuildingObjectCommand removes the selected building object from the current project's collection (and VM list if different), then selects the next item, previous, or clears selection when empty; buttons auto-disable when nothing is selected.
+- EditBuildingObjectCommand is scaffolded but the real edit UX is still TODO (planned for G6). UX note: after creating a new object, focus shifts to the detail panel and the project context feels less visible; this will be refined alongside the edit UI in G6.

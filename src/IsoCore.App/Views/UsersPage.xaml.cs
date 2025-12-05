@@ -89,6 +89,54 @@ public sealed partial class UsersPage : MenuPage
         await ViewModel.ToggleActiveForSelectedAsync().ConfigureAwait(true);
     }
 
+    private void NewUserActionButton_Click(object sender, RoutedEventArgs e)
+    {
+        ViewModel.StartCreateUser();
+        SetUserFormError(string.Empty);
+        NavigateTo<UserEditPage>();
+    }
+
+    private void EditUserActionButton_Click(object sender, RoutedEventArgs e)
+    {
+        SetUserFormError(string.Empty);
+
+        if (ViewModel.SelectedUser == null)
+        {
+            SetUserFormError("Není vybraný žádný uživatel.");
+            return;
+        }
+
+        ViewModel.StartEditSelectedUser();
+        NavigateTo<UserEditPage>();
+    }
+
+    private async void DeleteUser_Click(object sender, RoutedEventArgs e)
+    {
+        if (DataContext is not UsersViewModel viewModel || viewModel.SelectedUser == null)
+        {
+            return;
+        }
+
+        var user = viewModel.SelectedUser;
+
+        var dialog = new ContentDialog
+        {
+            Title = "Smazat uživatele",
+            Content = $"Opravdu chcete smazat uživatele {user.DisplayName} ({user.Username})?",
+            PrimaryButtonText = "Smazat",
+            CloseButtonText = "Zrušit",
+            DefaultButton = ContentDialogButton.Close,
+            XamlRoot = Content.XamlRoot
+        };
+
+        var result = await dialog.ShowAsync();
+
+        if (result == ContentDialogResult.Primary && viewModel.DeleteUserCommand.CanExecute(null))
+        {
+            viewModel.DeleteUserCommand.Execute(null);
+        }
+    }
+
     private void SetUserFormError(string message)
     {
         if (ViewModel != null)

@@ -43,7 +43,7 @@ public sealed partial class ProjectsPage : MenuPage
         {
             XamlRoot = Content.XamlRoot,
             Title = "Smazat projekt",
-            Content = $"Opravdu chcete smazat projekt \"{project.DisplayName}\"?",
+            Content = $"Opravdu chcete smazat projekt „{project.DisplayName}“?",
             PrimaryButtonText = "Smazat",
             CloseButtonText = "Zrušit",
             DefaultButton = ContentDialogButton.Close

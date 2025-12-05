@@ -43,6 +43,8 @@
                     </StackPanel>
                 </Button>
 
+                <!--
+                BEGIN: Temporarily removed sections (Data, Kontroling, Ceníky, Pomůcky)
                 <Border Style="{StaticResource IcbdMenuDivider}" />
 
                 <TextBlock Text="Data"
@@ -167,10 +169,11 @@
                 </Button>
 
                 <Border Style="{StaticResource IcbdMenuDivider}" />
-
+                END: Temporarily removed sections
+                -->
                 <StackPanel x:Name="AdminSection"
                             Visibility="{Binding AdminSectionVisibility}">
-                    <TextBlock Text="Správa"
+                    <TextBlock Text="Nastavení"
                                Style="{StaticResource IcbdMenuSectionHeader}" />
 
                     <Button Style="{StaticResource IcbdMenuButton}"
@@ -183,20 +186,29 @@
                         </StackPanel>
                     </Button>
                     <Button Style="{StaticResource IcbdMenuButton}"
-                            Click="OnTemplatesClicked">
+                            IsEnabled="False">
                         <StackPanel Orientation="Horizontal"
                                     Spacing="{StaticResource IcbdSpacingSmall}"
                                     VerticalAlignment="Center">
-                            <TextBlock Text="Šablony"
+                            <TextBlock Text="Branding"
                                        Style="{StaticResource IcbdNavItemTextBlockStyle}" />
                         </StackPanel>
                     </Button>
                     <Button Style="{StaticResource IcbdMenuButton}"
-                            Click="OnSettingsClicked">
+                            IsEnabled="False">
                         <StackPanel Orientation="Horizontal"
                                     Spacing="{StaticResource IcbdSpacingSmall}"
                                     VerticalAlignment="Center">
-                            <TextBlock Text="Nastavení"
+                            <TextBlock Text="Cesty souborů"
+                                       Style="{StaticResource IcbdNavItemTextBlockStyle}" />
+                        </StackPanel>
+                    </Button>
+                    <Button Style="{StaticResource IcbdMenuButton}"
+                            IsEnabled="False">
+                        <StackPanel Orientation="Horizontal"
+                                    Spacing="{StaticResource IcbdSpacingSmall}"
+                                    VerticalAlignment="Center">
+                            <TextBlock Text="Systém"
                                        Style="{StaticResource IcbdNavItemTextBlockStyle}" />
                         </StackPanel>
                     </Button>

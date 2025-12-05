@@ -27,4 +27,5 @@ public sealed class UserAccount
 
     public bool IsActive { get; set; } = true;
     public string Note { get; set; } = string.Empty;
+    public string EmploymentType { get; set; } = string.Empty;
 }

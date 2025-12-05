@@ -19,6 +19,8 @@ public sealed partial class DashboardPage : MenuPage
     private StackPanel? _projectsListPanel;
     private readonly IAppStateService _appState;
     public DashboardViewModel ViewModel { get; }
+    private bool _projectsInitialized;
+    private bool _isLoadingProjects;
 
     public DashboardPage()
     {
@@ -339,6 +341,42 @@ public sealed partial class DashboardPage : MenuPage
     {
         base.OnNavigatedTo(e);
         UpdateCurrentDate();
+    }
+
+    private async void DashboardPage_Loaded(object sender, RoutedEventArgs e)
+    {
+        if (_projectsInitialized || _isLoadingProjects)
+        {
+            return;
+        }
+
+        var registry = _appState.ProjectRegistry;
+        if (registry == null)
+        {
+            return;
+        }
+
+        var projects = registry.Projects;
+        if (projects != null && projects.Count > 0)
+        {
+            _projectsInitialized = true;
+            return;
+        }
+
+        _isLoadingProjects = true;
+        try
+        {
+            await registry.LoadFromStorageAsync().ConfigureAwait(true);
+            _projectsInitialized = true;
+        }
+        catch (Exception ex)
+        {
+            ShowDashboardError(ex);
+        }
+        finally
+        {
+            _isLoadingProjects = false;
+        }
     }
 
     private void UpdateCurrentDate()

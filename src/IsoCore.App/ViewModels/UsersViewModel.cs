@@ -1,8 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
+using IsoCore.App.Services.Auth;
 using IsoCore.App.Services;
 using IsoCore.Domain;
 
@@ -35,6 +39,7 @@ public class UsersViewModel : ViewModelBase
 {
     private readonly IUserAuthService _authService;
     private readonly IAppStateService _appState;
+    public event EventHandler<bool>? UserSaved;
 
     private UserListItem? _selectedUser;
     private string _editUsername = string.Empty;
@@ -57,11 +62,22 @@ public class UsersViewModel : ViewModelBase
     public Microsoft.UI.Xaml.Visibility AdminSectionVisibility => _appState.IsAdmin ? Microsoft.UI.Xaml.Visibility.Visible : Microsoft.UI.Xaml.Visibility.Collapsed;
     private bool _isNewUser;
     private string _userFormError = string.Empty;
+    private string _userFormSuccess = string.Empty;
+    private readonly Dictionary<string, string> _displayToDomainRoleMap;
+    private readonly Dictionary<string, string> _domainToDisplayRoleMap;
+    private string? _currentEditUserId;
+    private string? _currentEditUserLogin;
 
     public ObservableCollection<UserListItem> Users { get; } = new();
 
-    public IReadOnlyList<RoleOption> RoleOptions { get; } =
-        Roles.All.Select(role => new RoleOption(role, Roles.GetDisplayName(role))).ToList();
+    public IReadOnlyList<string> AvailableRoles { get; } =
+        new[] { "Administrátor", "Mistr", "Kontrolor", "Technik", "Předák", "Dělník" };
+
+    public IReadOnlyList<RoleOption> RoleOptions { get; }
+
+    public ICommand NewUserCommand { get; }
+    public ICommand SaveUserCommand { get; }
+    public ICommand DeleteUserCommand { get; }
 
     public UserListItem? SelectedUser
     {
@@ -70,43 +86,7 @@ public class UsersViewModel : ViewModelBase
         {
             if (SetProperty(ref _selectedUser, value))
             {
-                if (value == null)
-                {
-                    EditUsername = string.Empty;
-                    EditDisplayName = string.Empty;
-                    EditRole = string.Empty;
-                    EditLogin = string.Empty;
-                    EditWorkerNumber = string.Empty;
-                    EditTitleBefore = string.Empty;
-                    EditFirstName = string.Empty;
-                    EditLastName = string.Empty;
-                    EditTitleAfter = string.Empty;
-                    EditJobTitle = string.Empty;
-                    EditCompanyName = string.Empty;
-                    EditCompanyAddress = string.Empty;
-                    EditPhoneNumber = string.Empty;
-                    EditNote = string.Empty;
-                    EditIsActive = true;
-                }
-                else
-                {
-                    EditUsername = value.Username ?? string.Empty;
-                    EditDisplayName = value.DisplayName ?? string.Empty;
-                    EditRole = value.Role ?? string.Empty;
-                    EditLogin = value.Login ?? string.Empty;
-                    EditWorkerNumber = value.WorkerNumber ?? string.Empty;
-                    EditTitleBefore = value.TitleBefore ?? string.Empty;
-                    EditFirstName = value.FirstName ?? string.Empty;
-                    EditLastName = value.LastName ?? string.Empty;
-                    EditTitleAfter = value.TitleAfter ?? string.Empty;
-                    EditJobTitle = value.JobTitle ?? string.Empty;
-                    EditCompanyName = value.CompanyName ?? string.Empty;
-                    EditCompanyAddress = value.CompanyAddress ?? string.Empty;
-                    EditPhoneNumber = value.PhoneNumber ?? string.Empty;
-                    EditNote = value.Note ?? string.Empty;
-                    EditIsActive = value.IsActive;
-                }
-                UserFormError = string.Empty;
+                OnSelectedUserChanged(value);
             }
         }
     }
@@ -114,25 +94,50 @@ public class UsersViewModel : ViewModelBase
     public string EditUsername
     {
         get => _editUsername;
-        set => SetProperty(ref _editUsername, value);
+        set
+        {
+            if (SetProperty(ref _editUsername, value))
+            {
+                UpdateCommandStates();
+            }
+        }
     }
 
     public string EditDisplayName
     {
         get => _editDisplayName;
-        set => SetProperty(ref _editDisplayName, value);
+        set
+        {
+            if (SetProperty(ref _editDisplayName, value))
+            {
+                UpdateCommandStates();
+            }
+        }
     }
 
     public string EditRole
     {
         get => _editRole;
-        set => SetProperty(ref _editRole, value);
+        set
+        {
+            var normalizedRole = NormalizeRoleForEdit(value);
+            if (SetProperty(ref _editRole, normalizedRole))
+            {
+                UpdateCommandStates();
+            }
+        }
     }
 
     public string EditLogin
     {
         get => _editLogin;
-        set => SetProperty(ref _editLogin, value);
+        set
+        {
+            if (SetProperty(ref _editLogin, value))
+            {
+                UpdateCommandStates();
+            }
+        }
     }
 
     public string EditWorkerNumber
@@ -150,13 +155,25 @@ public class UsersViewModel : ViewModelBase
     public string EditFirstName
     {
         get => _editFirstName;
-        set => SetProperty(ref _editFirstName, value);
+        set
+        {
+            if (SetProperty(ref _editFirstName, value))
+            {
+                AutoGenerateLoginForNewUser();
+            }
+        }
     }
 
     public string EditLastName
     {
         get => _editLastName;
-        set => SetProperty(ref _editLastName, value);
+        set
+        {
+            if (SetProperty(ref _editLastName, value))
+            {
+                AutoGenerateLoginForNewUser();
+            }
+        }
     }
 
     public string EditTitleAfter
@@ -174,7 +191,13 @@ public class UsersViewModel : ViewModelBase
     public string EditCompanyName
     {
         get => _editCompanyName;
-        set => SetProperty(ref _editCompanyName, value);
+        set
+        {
+            if (SetProperty(ref _editCompanyName, value))
+            {
+                OnPropertyChanged(nameof(EmploymentType));
+            }
+        }
     }
 
     public string EditCompanyAddress
@@ -213,6 +236,12 @@ public class UsersViewModel : ViewModelBase
         set => SetProperty(ref _userFormError, value);
     }
 
+    public string UserFormSuccess
+    {
+        get => _userFormSuccess;
+        set => SetProperty(ref _userFormSuccess, value);
+    }
+
     public string CurrentUserLabel
     {
         get
@@ -229,10 +258,21 @@ public class UsersViewModel : ViewModelBase
         }
     }
 
+    public string EmploymentType =>
+        IsCoreCompany(EditCompanyName) ? "Kmenov� zam�stnanec" : "Subdodavatel";
+
     public UsersViewModel(IUserAuthService authService, IAppStateService appState)
     {
         _authService = authService ?? throw new ArgumentNullException(nameof(authService));
         _appState = appState ?? throw new ArgumentNullException(nameof(appState));
+        RoleOptions = AvailableRoles.Select(role => new RoleOption(role, role)).ToList();
+        _displayToDomainRoleMap = BuildDisplayToDomainRoleMap();
+        _domainToDisplayRoleMap = BuildDomainToDisplayRoleMap();
+
+        NewUserCommand = new RelayCommand(_ => StartCreateUser(), _ => !IsBusy);
+        SaveUserCommand = new RelayCommand(async _ => await SaveUserAsync().ConfigureAwait(false), _ => CanExecuteSaveUser());
+        DeleteUserCommand = new RelayCommand(async _ => await DeleteSelectedUserAsync().ConfigureAwait(false), _ => CanExecuteDeleteUser());
+
         ReloadUsersFromService();
         StartNewUser();
         _appState.CurrentUserChanged += OnCurrentUserChanged;
@@ -301,7 +341,7 @@ public class UsersViewModel : ViewModelBase
     }
 
     [Obsolete("This method has unsafe threading. Use SaveCurrentUserAsync instead.")]
-    public async Task SaveUserAsync()
+    public async Task SaveUserAsyncLegacy()
     {
         if (IsBusy)
         {
@@ -415,29 +455,13 @@ public class UsersViewModel : ViewModelBase
     {
         if (SelectedUser == null)
         {
-            EditUsername = string.Empty;
-            EditDisplayName = string.Empty;
-            EditRole = Roles.Technik;
-            EditLogin = string.Empty;
-            EditWorkerNumber = string.Empty;
-            EditTitleBefore = string.Empty;
-            EditFirstName = string.Empty;
-            EditLastName = string.Empty;
-            EditTitleAfter = string.Empty;
-            EditJobTitle = string.Empty;
-            EditCompanyName = string.Empty;
-            EditCompanyAddress = string.Empty;
-            EditPhoneNumber = string.Empty;
-            EditNote = string.Empty;
-            EditIsActive = true;
-            IsNewUser = true;
-            UserFormError = string.Empty;
+            ResetEditFieldsForNewUser();
         }
         else
         {
             EditUsername = SelectedUser.Username;
             EditDisplayName = SelectedUser.DisplayName;
-            EditRole = SelectedUser.Role;
+            EditRole = NormalizeRoleForEdit(SelectedUser.Role);
             EditLogin = string.IsNullOrWhiteSpace(SelectedUser.Login) ? SelectedUser.Username : SelectedUser.Login;
             EditWorkerNumber = SelectedUser.WorkerNumber;
             EditTitleBefore = SelectedUser.TitleBefore;
@@ -452,29 +476,43 @@ public class UsersViewModel : ViewModelBase
             EditIsActive = SelectedUser.IsActive;
             IsNewUser = false;
             UserFormError = string.Empty;
+            UserFormSuccess = string.Empty;
+            _currentEditUserId = SelectedUser.Id;
+            _currentEditUserLogin = string.IsNullOrWhiteSpace(SelectedUser.Login) ? SelectedUser.Username : SelectedUser.Login;
         }
     }
 
     public void StartNewUser()
     {
+        ResetEditFieldsForNewUser();
         SelectedUser = null;
-        EditUsername = string.Empty;
-        EditDisplayName = string.Empty;
-        EditRole = Roles.Technik;
-        EditLogin = string.Empty;
-        EditWorkerNumber = string.Empty;
-        EditTitleBefore = string.Empty;
-        EditFirstName = string.Empty;
-        EditLastName = string.Empty;
-        EditTitleAfter = string.Empty;
-        EditJobTitle = string.Empty;
-        EditCompanyName = string.Empty;
-        EditCompanyAddress = string.Empty;
-        EditPhoneNumber = string.Empty;
-        EditIsActive = true;
-        EditNote = string.Empty;
+    }
+
+    public void StartCreateUser()
+    {
+        ResetEditFieldsForNewUser();
+        SelectedUser = null;
         IsNewUser = true;
         UserFormError = string.Empty;
+        UserFormSuccess = string.Empty;
+        _currentEditUserId = null;
+        _currentEditUserLogin = null;
+    }
+
+    public void StartEditSelectedUser()
+    {
+        if (SelectedUser == null)
+        {
+            SetError("Vyberte uživatele ze seznamu.");
+            return;
+        }
+
+        IsNewUser = false;
+        LoadSelectedUserIntoForm();
+        _currentEditUserId = SelectedUser.Id;
+        _currentEditUserLogin = string.IsNullOrWhiteSpace(SelectedUser.Login) ? SelectedUser.Username : SelectedUser.Login;
+        UserFormError = string.Empty;
+        UserFormSuccess = string.Empty;
     }
 
     public async Task<bool> SaveCurrentUserAsync(string? newPassword, string? confirmPassword)
@@ -509,7 +547,7 @@ public class UsersViewModel : ViewModelBase
             Id = IsNewUser ? string.Empty : SelectedUser?.Id ?? string.Empty,
             Username = EditUsername.Trim(),
             DisplayName = EditDisplayName.Trim(),
-            Role = string.IsNullOrWhiteSpace(EditRole) ? Roles.Technik : EditRole.Trim(),
+            Role = NormalizeRoleForDomain(EditRole),
             Login = string.IsNullOrWhiteSpace(EditLogin) ? EditUsername.Trim() : EditLogin.Trim(),
             WorkerNumber = EditWorkerNumber.Trim(),
             TitleBefore = EditTitleBefore.Trim(),
@@ -545,6 +583,7 @@ public class UsersViewModel : ViewModelBase
         var newIsActive = !SelectedUser.IsActive;
         await _authService.ToggleActiveAsync(SelectedUser.Id, newIsActive);
         ReloadUsersFromService(SelectedUser.Username);
+        SetSuccess(newIsActive ? "Uživatel byl aktivován." : "Uživatel byl deaktivován.");
     }
 
     public async Task DeleteSelectedUserAsync()
@@ -554,18 +593,30 @@ public class UsersViewModel : ViewModelBase
             return;
         }
 
-        await _authService.DeleteUserAsync(SelectedUser.Username).ConfigureAwait(false);
-        await LoadUsersAsync().ConfigureAwait(false);
-    }
+        SetError(string.Empty);
+        SetSuccess(string.Empty);
 
-    public void DeleteSelectedUserInMemory()
-    {
-        if (SelectedUser == null)
+        var username = SelectedUser.Username;
+        var success = false;
+
+        try
+        {
+            await _authService.DeleteUserAsync(username).ConfigureAwait(false);
+            success = true;
+        }
+        catch
+        {
+            SetError("Smazání uživatele se nezdařilo.");
+        }
+
+        if (!success)
         {
             return;
         }
 
-        Users.Remove(SelectedUser);
+        await LoadUsersAsync().ConfigureAwait(false);
+        StartNewUser();
+        SetSuccess("Uživatel byl smazán.");
     }
 
     public async void ToggleActiveForSelected()
@@ -573,13 +624,13 @@ public class UsersViewModel : ViewModelBase
         await ToggleActiveForSelectedAsync();
     }
 
-    private Task ReloadUsersAsync(string? usernameToSelect = null)
+    private Task ReloadUsersAsync(string? usernameToSelect = null, string? userIdToSelect = null)
     {
-        ReloadUsersFromService(usernameToSelect);
+        ReloadUsersFromService(usernameToSelect, userIdToSelect);
         return Task.CompletedTask;
     }
 
-    private void ReloadUsersFromService(string? usernameToSelect = null)
+    private void ReloadUsersFromService(string? usernameToSelect = null, string? userIdToSelect = null)
     {
         Users.Clear();
 
@@ -613,7 +664,12 @@ public class UsersViewModel : ViewModelBase
 
             Users.Add(item);
 
-            if (!string.IsNullOrEmpty(usernameToSelect) &&
+            if (!string.IsNullOrEmpty(userIdToSelect) &&
+                string.Equals(u.Id, userIdToSelect, StringComparison.OrdinalIgnoreCase))
+            {
+                newlySelected = item;
+            }
+            else if (!string.IsNullOrEmpty(usernameToSelect) &&
                 string.Equals(u.Username, usernameToSelect, StringComparison.OrdinalIgnoreCase))
             {
                 newlySelected = item;
@@ -632,4 +688,390 @@ public class UsersViewModel : ViewModelBase
         OnPropertyChanged(nameof(CurrentUserLabel));
         OnPropertyChanged(nameof(AdminSectionVisibility));
     }
+
+    private void OnSelectedUserChanged(UserListItem? value)
+    {
+        if (value == null)
+        {
+            ResetEditFieldsForNewUser();
+        }
+        else
+        {
+            LoadSelectedUserIntoForm();
+            IsNewUser = false;
+            UserFormError = string.Empty;
+        }
+
+        UpdateCommandStates();
+    }
+
+    private void ResetEditFieldsForNewUser()
+    {
+        ClearEditFields();
+        IsNewUser = true;
+        UserFormError = string.Empty;
+        UserFormSuccess = string.Empty;
+        _currentEditUserId = null;
+        _currentEditUserLogin = null;
+        UpdateCommandStates();
+    }
+
+    private void ClearEditFields()
+    {
+        EditUsername = string.Empty;
+        EditDisplayName = string.Empty;
+        EditRole = AvailableRoles.First();
+        EditLogin = string.Empty;
+        EditWorkerNumber = string.Empty;
+        EditTitleBefore = string.Empty;
+        EditFirstName = string.Empty;
+        EditLastName = string.Empty;
+        EditTitleAfter = string.Empty;
+        EditJobTitle = string.Empty;
+        EditCompanyName = string.Empty;
+        EditCompanyAddress = string.Empty;
+        EditPhoneNumber = string.Empty;
+        EditNote = string.Empty;
+        EditIsActive = true;
+    }
+
+    private string NormalizeRoleForEdit(string? role)
+    {
+        if (string.IsNullOrWhiteSpace(role))
+        {
+            return AvailableRoles.First();
+        }
+
+        if (_domainToDisplayRoleMap.TryGetValue(role.Trim(), out var displayRole))
+        {
+            return displayRole;
+        }
+
+        var match = AvailableRoles.FirstOrDefault(r => string.Equals(r, role, StringComparison.OrdinalIgnoreCase));
+        return match ?? AvailableRoles.First();
+    }
+
+    private string NormalizeRoleForDomain(string? roleDisplay)
+    {
+        if (string.IsNullOrWhiteSpace(roleDisplay))
+        {
+            return Roles.Technik;
+        }
+
+        if (_displayToDomainRoleMap.TryGetValue(roleDisplay.Trim(), out var domainRole))
+        {
+            return domainRole;
+        }
+
+        return Roles.Technik;
+    }
+
+    private Dictionary<string, string> BuildDisplayToDomainRoleMap()
+    {
+        var domainRoles = new[] { Roles.Kontrolor, Roles.Administrator, Roles.Mistr, Roles.Technik, Roles.Predak, Roles.Delnik };
+
+        return AvailableRoles
+            .Zip(domainRoles, (display, domain) => new { display, domain })
+            .ToDictionary(p => p.display, p => p.domain, StringComparer.OrdinalIgnoreCase);
+    }
+
+    private Dictionary<string, string> BuildDomainToDisplayRoleMap()
+    {
+        var domainRoles = new[] { Roles.Kontrolor, Roles.Administrator, Roles.Mistr, Roles.Technik, Roles.Predak, Roles.Delnik };
+
+        return domainRoles
+            .Zip(AvailableRoles, (domain, display) => new { domain, display })
+            .ToDictionary(p => p.domain, p => p.display, StringComparer.OrdinalIgnoreCase);
+    }
+
+    private void AutoGenerateLoginForNewUser()
+    {
+        if (!IsNewUser)
+        {
+            return;
+        }
+
+        // Do not overwrite a login that the user already typed.
+        if (!string.IsNullOrWhiteSpace(EditLogin))
+        {
+            return;
+        }
+
+        var first = (EditFirstName ?? string.Empty).Trim();
+        var last = (EditLastName ?? string.Empty).Trim();
+
+        if (string.IsNullOrWhiteSpace(first) && string.IsNullOrWhiteSpace(last))
+        {
+            return;
+        }
+
+        var baseLogin = BuildBaseLoginFromName(first, last);
+        if (string.IsNullOrWhiteSpace(baseLogin))
+        {
+            return;
+        }
+
+        var uniqueLogin = GenerateUniqueLogin(baseLogin);
+        if (string.IsNullOrWhiteSpace(uniqueLogin))
+        {
+            return;
+        }
+
+        EditLogin = uniqueLogin;
+    }
+
+    private static string BuildBaseLoginFromName(string firstName, string lastName)
+    {
+        var first = RemoveDiacritics(firstName).ToLowerInvariant();
+        var last = RemoveDiacritics(lastName).ToLowerInvariant();
+
+        first = new string(first.Where(char.IsLetterOrDigit).ToArray());
+        last = new string(last.Where(char.IsLetterOrDigit).ToArray());
+
+        if (string.IsNullOrWhiteSpace(first) && string.IsNullOrWhiteSpace(last))
+        {
+            return string.Empty;
+        }
+
+        if (string.IsNullOrWhiteSpace(last))
+        {
+            return first;
+        }
+
+        if (string.IsNullOrWhiteSpace(first))
+        {
+            return last;
+        }
+
+        return $"{first}.{last}";
+    }
+
+    private string GenerateUniqueLogin(string baseLogin)
+    {
+        if (string.IsNullOrWhiteSpace(baseLogin))
+        {
+            return string.Empty;
+        }
+
+        var existing = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        var allUsers = _authService.GetAllUsers();
+        foreach (var user in allUsers)
+        {
+            if (!string.IsNullOrWhiteSpace(user.Login))
+            {
+                existing.Add(user.Login.Trim());
+            }
+
+            if (!string.IsNullOrWhiteSpace(user.Username))
+            {
+                existing.Add(user.Username.Trim());
+            }
+        }
+
+        if (!existing.Contains(baseLogin))
+        {
+            return baseLogin;
+        }
+
+        var suffix = 2;
+        while (true)
+        {
+            var candidate = $"{baseLogin}{suffix}";
+            if (!existing.Contains(candidate))
+            {
+                return candidate;
+            }
+
+            suffix++;
+        }
+    }
+
+    private bool IsCoreCompany(string? companyName)
+    {
+        if (string.IsNullOrWhiteSpace(companyName))
+        {
+            return false;
+        }
+
+        return string.Equals(
+            companyName.Trim(),
+            _appState.CoreCompanyName,
+            StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string RemoveDiacritics(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return string.Empty;
+        }
+
+        var normalized = text.Normalize(NormalizationForm.FormD);
+        var filtered = normalized.Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark);
+        return new string(filtered.ToArray()).Normalize(NormalizationForm.FormC);
+    }
+
+    private void UpdateCommandStates()
+    {
+        if (SaveUserCommand is RelayCommand saveCommand)
+        {
+            saveCommand.RaiseCanExecuteChanged();
+        }
+
+        if (DeleteUserCommand is RelayCommand deleteCommand)
+        {
+            deleteCommand.RaiseCanExecuteChanged();
+        }
+    }
+
+    private bool CanExecuteSaveUser()
+    {
+        return !IsBusy;
+    }
+
+    private bool CanExecuteDeleteUser()
+    {
+        return SelectedUser != null;
+    }
+
+    public async Task<bool> SaveUserAsync()
+    {
+        IsBusy = true;
+        UpdateCommandStates();
+
+        var success = false;
+        SetError(string.Empty);
+        SetSuccess(string.Empty);
+
+        try
+        {
+            if (!ValidateRequiredFields())
+            {
+                return false;
+            }
+
+            var user = BuildUserFromEditFields();
+            UserAccount saved;
+
+            if (IsNewUser || string.IsNullOrWhiteSpace(_currentEditUserId))
+            {
+                saved = await _authService.CreateUserAsync(user).ConfigureAwait(false);
+            }
+            else
+            {
+                var originalLogin = _currentEditUserLogin ?? user.Login ?? user.Username;
+                saved = await _authService.UpdateUserAsync(originalLogin, user).ConfigureAwait(false);
+            }
+
+            _currentEditUserId = saved.Id;
+            _currentEditUserLogin = saved.Login;
+            IsNewUser = false;
+
+            ReloadUsersFromService(saved.Username, saved.Id);
+            SetSuccess("Uživatel byl uložen.");
+            success = true;
+            return true;
+        }
+        catch
+        {
+            SetError("Uložení uživatele se nezdařilo.");
+            return false;
+        }
+        finally
+        {
+            IsBusy = false;
+            UpdateCommandStates();
+            UserSaved?.Invoke(this, success);
+        }
+    }
+
+    private UserAccount BuildUserFromEditFields()
+    {
+        var rawUsername = EditUsername?.Trim() ?? string.Empty;
+        var login = (EditLogin ?? string.Empty).Trim();
+        var roleDomain = NormalizeRoleForDomain(EditRole);
+
+        var username = string.IsNullOrWhiteSpace(rawUsername) ? login : rawUsername;
+
+        return new UserAccount
+        {
+            Id = string.IsNullOrWhiteSpace(_currentEditUserId) ? Guid.NewGuid().ToString("D") : _currentEditUserId,
+            Username = username,
+            DisplayName = string.IsNullOrWhiteSpace(EditDisplayName) ? username : EditDisplayName.Trim(),
+            Role = roleDomain,
+            Login = login,
+            WorkerNumber = EditWorkerNumber?.Trim() ?? string.Empty,
+            TitleBefore = EditTitleBefore?.Trim() ?? string.Empty,
+            FirstName = EditFirstName?.Trim() ?? string.Empty,
+            LastName = EditLastName?.Trim() ?? string.Empty,
+            TitleAfter = EditTitleAfter?.Trim() ?? string.Empty,
+            JobTitle = EditJobTitle?.Trim() ?? string.Empty,
+            CompanyName = EditCompanyName?.Trim() ?? string.Empty,
+            CompanyAddress = EditCompanyAddress?.Trim() ?? string.Empty,
+            PhoneNumber = EditPhoneNumber?.Trim() ?? string.Empty,
+            Note = EditNote?.Trim() ?? string.Empty,
+            IsActive = EditIsActive,
+            EmploymentType = IsCoreCompany(EditCompanyName)
+                ? "Kmenov� zam�stnanec"
+                : "Subdodavatel"
+        };
+    }
+
+
+    private bool ValidateRequiredFields()
+    {
+        var roleDomain = NormalizeRoleForDomain(EditRole);
+        var missingCommon = string.IsNullOrWhiteSpace(EditLogin) ||
+                            string.IsNullOrWhiteSpace(EditRole) ||
+                            string.IsNullOrWhiteSpace(EditFirstName) ||
+                            string.IsNullOrWhiteSpace(EditLastName);
+
+        var missingWorkerSpecific = string.Equals(roleDomain, Roles.Delnik, StringComparison.OrdinalIgnoreCase) &&
+                                    (string.IsNullOrWhiteSpace(EditWorkerNumber) ||
+                                     string.IsNullOrWhiteSpace(EditCompanyName));
+
+        if (missingCommon || missingWorkerSpecific)
+        {
+            SetError("Vyplňte prosím všechna povinná pole.");
+            return false;
+        }
+
+        return true;
+    }
+
+    private void SetError(string message)
+    {
+        UserFormError = message;
+        UserFormSuccess = string.Empty;
+    }
+
+    private void SetSuccess(string message)
+    {
+        UserFormSuccess = message;
+        UserFormError = string.Empty;
+    }
+
+    private sealed class RelayCommand : ICommand
+    {
+        private readonly Action<object?> _execute;
+        private readonly Func<object?, bool>? _canExecute;
+
+        public RelayCommand(Action<object?> execute, Func<object?, bool>? canExecute = null)
+        {
+            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
+            _canExecute = canExecute;
+        }
+
+        public event EventHandler? CanExecuteChanged;
+
+        public bool CanExecute(object? parameter) => _canExecute?.Invoke(parameter) ?? true;
+
+        public void Execute(object? parameter) => _execute(parameter);
+
+        public void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+    }
 }
+
+
+

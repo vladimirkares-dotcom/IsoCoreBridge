@@ -19,7 +19,8 @@
             Grid.Column="0"
             Style="{StaticResource IcbdLeftNavMargin}"
             DashboardClicked="OnDashboardClicked"
-            ProjectsClicked="OnProjectsClicked" />
+            ProjectsClicked="OnProjectsClicked"
+            UsersClicked="OnUsersClicked" />
 
         <Grid Grid.Column="1"
               Background="{StaticResource IcbdWindowBackgroundBrush}">
