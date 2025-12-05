@@ -1,6 +1,6 @@
 IsoCoreBridge – Project State Map
 High-level snapshot for AI assistants and developers
-Last updated: 2025-11-24
+Last updated: 2025-12-05
 
 ## Solution structure
 - Projects: `IsoCore.App` (WinUI 3 desktop app), `IsoCore.Domain` (domain models).
@@ -22,7 +22,7 @@ Last updated: 2025-11-24
 - Present: `DashboardViewModel`, `ProjectsViewModel`, `OverviewsViewModel`, `UsersViewModel`, `UserDetailViewModel`, `ChangePasswordViewModel`, `ProjectDetailPageViewModel`, `SettingsPageViewModel`, `SplashViewModel` (manages progress and one-time navigation via `NavigateFromSplash`), `LoginViewModel` (backend-only, trims username, validates non-empty username/password, uses `IsBusy` to prevent concurrent logins, raises `LoginSucceeded`), helper `RoleOption`, base `ViewModelBase`.
 - UI/XAML pages exist and build cleanly, but this document does not track UI layout.
 - `LoginPage` hosts `LoginViewModel`, finds `LoginButton` on `Loaded`, hooks Click to an async handler using `IsBusy` + button disabling, and detaches both Click and `LoginSucceeded` subscriptions on `Unloaded`. `LoginPage.xaml` contains a minimal structural form (header “Přihlášení”, TextBoxes bound to `Username`/`Password`, TextBlock bound to `ErrorMessage`, `Button` `x:Name="LoginButton"`).
-- `UsersViewModel` includes `IsBusy`, `Users` collection of `UserListItem`, `SelectedUser` synced to `Edit*` properties (EditUsername, EditDisplayName, EditRole, EditLogin, EditWorkerNumber, EditTitleBefore, EditFirstName, EditLastName, EditTitleAfter, EditJobTitle, EditCompanyName, EditCompanyAddress, EditPhoneNumber, EditNote, EditIsActive, `UserFormError`), and operations `LoadUsersAsync`, `SaveUserAsync`, `DeleteUserAsync`, `CreateUserAsync` wired to `App.UserAuthService`; `UserFormError` is public/bindable, cleared when selection changes; `UsersPage.xaml.cs` helper `SetUserFormError` sets it directly.
+- `UsersViewModel` includes `IsBusy`, `Users` collection of `UserListItem`, `SelectedUser` synced to `Edit*` properties (EditUsername, EditDisplayName, EditRole, EditLogin, EditWorkerNumber, EditTitleBefore, EditFirstName, EditLastName, EditTitleAfter, EditJobTitle, EditCompanyName, EditCompanyAddress, EditPhonePrefix, EditPhoneNumber, EditEmail, EditNote, EditIsActive, `UserFormError`), and operations `LoadUsersAsync`, `SaveUserAsync`, `DeleteUserAsync`, `CreateUserAsync` wired to `App.UserAuthService`; `UserFormError` is public/bindable, cleared when selection changes; `UsersPage.xaml.cs` helper `SetUserFormError` sets it directly. Auto login/e‑mail generator for new users (diacritics stripped, unique login, e‑mail = login + firemní doména); prefill company name/prefix from firemní nastavení; manual edits are respected.
 - `SettingsPageViewModel` exposes bindable current-user snapshot (`CurrentUsername`, `CurrentDisplayName`, `CurrentRoleName`, `CurrentLogin`) refreshed from `App.AppState.CurrentUser`; `SettingsPage.xaml.cs` sets `DataContext`, refreshes on `Loaded`.
 - `ChangePasswordViewModel` exposes `OldPassword`, `NewPassword`, `ConfirmPassword`, `ErrorMessage`, `SuccessMessage`, `IsBusy`; validates inputs (empty checks, match, length), guards with `IsBusy`, verifies old password via `LoginAsync`, changes the current user’s password via `SetPasswordAsync`, uses `SetError`/`SetSuccess` helpers; `ChangePasswordPage.xaml` shows password boxes + bound error/success TextBlocks, and code-behind forwards box values then calls `ChangePasswordAsync`.
 - `ProjectsViewModel` exposes `Projects` (`ObservableCollection<ProjectInfo>`), `IsBusy`, `SelectedProject` synced s `AppState.CurrentProject` (setter volá `_appState.SetCurrentProject`, poslouchá `CurrentProjectChanged`), `LoadProjectsAsync()` načítá z `ProjectRegistry` s hlídáním `IsBusy`; `ProjectsPage.xaml` binduje `ItemsSource`/`SelectedItem`, `SelectionChanged` volá code-behind k nastavení current projektu, `Loaded` spouští `LoadProjectsAsync`. Project mutations are dispatcher-safe via ProjectRegistry.
@@ -32,7 +32,7 @@ Last updated: 2025-11-24
 - B-3b implemented: interface shows only „Hlavní“ (Dashboard, Projekty, Přehledy) and „Nastavení“ (Uživatelé + disabled placeholders); sections „Data“, „Kontroling“, „Ceníky“, „Pomůcky“ are commented out.
 
 ## Modulový stav
-- USERS (S-balíček): hotovo (uživatelé, CRUD, hesla, UserFormError binding). A-2a: CoreCompanyName spravuje AppState; EmploymentType logika stabilní. Known issue: nového uživatele nelze vytvořit – pending analýza (pozdější krok).
+- USERS (S-balíček): hotovo (uživatelé, CRUD, hesla, UserFormError binding). Auto-login/e-mail generátor opraven pro create flow, seznam zobrazuje správně jméno a roli po založení, po úspěšném uložení se edit page vrací na seznam. A-2a: CoreCompanyName + výchozí prefix/doména/adresa spravuje AppState; EmploymentType logika stabilní.
 - SETTINGS + ChangePassword: hotovo (snapshot aktuálního uživatele, změna hesla, stránky navázané na VM).
 - PROJECTS (P-balíček): P1-P5 hotovo (async načtení, výběr ↔ AppState sync, základní hinty/akce na ProjectsPage); P6 (UI/UX pro navigaci/přehled) zbývá. Projekty jsou async-loaded přes ProjectsStorageService + ProjectRegistry (dispatcher-safe); UI má kompaktní dvouřádkový layout seznamu (kód + název, status), dialog pro založení projektu (auto výběr), dialog pro editaci (validace unikátního kódu), dialog pro smazání s potvrzením, a double-click open na řádku seznamu. Edit/Delete jsou auto-enabled/disabled dle výběru.
 - DASHBOARD (D-balíček): D1–D6 hotovo (analýza, data, navigace, shell) + D6–P1 až D6–P5 hotovo (finální moderní vizuální design ve stylu VL4D, karty, typografie, mezery); dashboard je 100 % dokončený.
@@ -51,6 +51,7 @@ Last updated: 2025-11-24
 - Stabilized build pipeline (Debug/x64, win-x64).
 - D6–P5: Final VL4D balance pass na DashboardPage – sjednocení spodního okraje header gridu s kartovým layoutem pomocí `IcbdSpacingMedium`, vizuální rytmus headeru a karet ustálen, build bez chyb.
 - E1–P5: Stabilizace levého menu – rollback riskantního ControlTemplate (AccessViolation), zachování spacing/typografie z E1–P1/E1–P2, IcbdMenuButton nyní jednoduchý stabilní styl; pokročilé Forge efekty odloženy do budoucího bloku.
+- F10: Firemní nastavení – nová stránka `BrandingPage` (Nastavení firmy) + `CompanySettingsViewModel`; AppState nyní drží kmenovou firmu, výchozí telefonní předvolbu, e‑mailovou doménu a adresu. Users formy předvyplňují firmu/předvolbu a generují e‑mail z loginu + domény. Levé menu má položku „Nastavení firmy“ (dříve „Branding“).
 
 ## Next planned backend steps
 - Remaining UI/UX wiring: richer validation for Login (focus/error presentation) and UI polish for Users/Settings/Projects (P5); replace the template MainPage with the real dashboard/shell using existing viewmodels.

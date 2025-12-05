@@ -8,12 +8,20 @@
     xmlns:views="using:IsoCore.App.Views"
     mc:Ignorable="d">
 
+    <views:MenuPage.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/FormStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </views:MenuPage.Resources>
+
     <Grid Background="{StaticResource IcbdWindowBackgroundBrush}"
           Style="{StaticResource IcbdPageGrid}">
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="{StaticResource IcbdPaddingL}"
                         Spacing="{StaticResource IcbdSpacingMedium}">
-                <TextBlock Text="Uživatel – úprava"
+                <TextBlock Text="Úprava uživatele"
                            Style="{StaticResource IcbdHeadlineXLTextBlockStyle}" />
 
                 <StackPanel Style="{StaticResource IcbdErrorAreaStack}">
@@ -24,29 +32,77 @@
                 </StackPanel>
 
                 <StackPanel Spacing="{StaticResource IcbdSpacingSmall}">
-                    <TextBox Header="Přihlašovací jméno"
-                             Text="{Binding EditLogin, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                    <TextBox Header="Titul před jménem"
-                             Text="{Binding EditTitleBefore, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                    <TextBox Header="Jméno"
-                             Text="{Binding EditFirstName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                    <TextBox Header="Příjmení"
-                             Text="{Binding EditLastName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                    <TextBox Header="Titul za jménem"
-                             Text="{Binding EditTitleAfter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource IcbdSpacingSmall}">
+                        <TextBox Header="Přihlašovací jméno"
+                                 IsReadOnly="{Binding IsLoginReadOnly}"
+                                 Text="{Binding EditLogin, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <Button Grid.Column="1"
+                                Content="Editovat"
+                                Visibility="{Binding AdminSectionVisibility}"
+                                Command="{Binding AllowLoginEditCommand}" />
+                    </Grid>
+
                     <ComboBox Header="Role"
                               ItemsSource="{Binding AvailableRoles}"
                               SelectedItem="{Binding EditRole, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                    <Grid ColumnDefinitions="1*,1*"
+                          RowDefinitions="Auto,Auto"
+                          ColumnSpacing="{StaticResource IcbdSpacingSmall}">
+                        <TextBox Grid.Row="0" Grid.Column="0"
+                                 Header="Titul před jménem (nepovinné)"
+                                 Text="{Binding EditTitleBefore, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBox Grid.Row="0" Grid.Column="1"
+                                 Header="Jméno *"
+                                 Text="{Binding EditFirstName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBox Grid.Row="1" Grid.Column="0"
+                                 Header="Příjmení *"
+                                 Text="{Binding EditLastName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBox Grid.Row="1" Grid.Column="1"
+                                 Header="Titul za jménem (nepovinné)"
+                                 Text="{Binding EditTitleAfter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    </Grid>
+
                     <TextBox Header="Pořadové číslo"
+                             Visibility="{Binding WorkerOnlyVisibility}"
                              Text="{Binding EditWorkerNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBox Header="Osobní číslo (nepovinné)"
+                             Visibility="{Binding WorkerOnlyVisibility}"
+                             Text="{Binding EditPersonalNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                    <TextBox Header="Pozice"
+                             Visibility="{Binding NonWorkerVisibility}"
+                             Text="{Binding EditJobTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
                     <TextBox Header="Firma"
                              Text="{Binding EditCompanyName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                    <StackPanel Spacing="2">
-                        <TextBlock Text="Typ zaměstnance"
+
+                    <StackPanel>
+                        <TextBlock Text="Telefon"
+                                   Style="{StaticResource IcbdCaptionText}" />
+                        <Grid ColumnDefinitions="Auto,*"
+                              ColumnSpacing="{StaticResource IcbdSpacingSmall}">
+                            <ComboBox Grid.Column="0"
+                                      Style="{StaticResource PhonePrefixComboBox}"
+                                      ItemsSource="{Binding PhonePrefixes}"
+                                      SelectedItem="{Binding EditPhonePrefix, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Grid.Column="1"
+                                     PlaceholderText="Telefon"
+                                     Text="{Binding EditPhoneNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        </Grid>
+                    </StackPanel>
+
+                    <TextBox Header="E-mail"
+                             Visibility="{Binding NonWorkerVisibility}"
+                             Text="{Binding EditEmail, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                    <StackPanel Style="{StaticResource IcbdTightStackStyle}">
+                        <TextBlock Text="Typ úvazku"
                                    Style="{StaticResource IcbdCaptionText}" />
                         <TextBlock Text="{Binding EmploymentType}"
                                    Style="{StaticResource IcbdBodyTextBlockStyle}" />
                     </StackPanel>
+
                     <CheckBox Content="Aktivní"
                               IsChecked="{Binding EditIsActive, Mode=TwoWay}" />
                 </StackPanel>

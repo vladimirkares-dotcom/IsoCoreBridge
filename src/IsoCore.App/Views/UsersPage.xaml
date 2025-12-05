@@ -7,6 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModels="using:IsoCore.App.ViewModels"
+    xmlns:conv="using:Microsoft.UI.Xaml"
     mc:Ignorable="d">
 
     <Grid Background="{StaticResource IcbdWindowBackgroundBrush}"
@@ -60,7 +61,6 @@
                                     Style="{StaticResource IcbdButtonSecondaryStyle}"
                                     HorizontalAlignment="Stretch" />
                             <Button Content="Smazat uživatele"
-                                    Command="{Binding DeleteUserCommand}"
                                     Click="DeleteUser_Click"
                                     Style="{StaticResource IcbdButtonSecondaryStyle}"
                                     HorizontalAlignment="Stretch" />
@@ -80,19 +80,28 @@
                     <StackPanel Spacing="{StaticResource IcbdSpacingSmall}">
                         <TextBlock Text="Uživatelé"
                                    Style="{StaticResource IcbdSectionHeaderText}" />
-                        <ListView ItemsSource="{Binding Users}"
-                                  SelectedItem="{Binding SelectedUser, Mode=TwoWay}">
-                            <ListView.ItemTemplate>
-                                <DataTemplate x:DataType="viewModels:UserListItem">
-                                    <StackPanel Orientation="Horizontal" Spacing="8">
-                                        <TextBlock Text="{x:Bind Username}" Width="120" />
-                                        <TextBlock Text="{x:Bind DisplayName}" Width="180" />
-                                        <TextBlock Text="{x:Bind RoleDisplayName}" />
-                                        <TextBlock Text="{x:Bind Status}" Width="100" />
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </ListView>
+                        <StackPanel Spacing="4">
+                            <Grid ColumnDefinitions="1*,1*,1*,1*"
+                                  Padding="0,0,0,4">
+                                <TextBlock Text="Jméno" Style="{StaticResource IcbdListHeaderTextStyle}" />
+                                <TextBlock Text="Příjmení" Grid.Column="1" Style="{StaticResource IcbdListHeaderTextStyle}" />
+                                <TextBlock Text="Role" Grid.Column="2" Style="{StaticResource IcbdListHeaderTextStyle}" />
+                                <TextBlock Text="Stav" Grid.Column="3" Style="{StaticResource IcbdListHeaderTextStyle}" />
+                            </Grid>
+                            <ListView ItemsSource="{Binding Users}"
+                                      SelectedItem="{Binding SelectedUser, Mode=TwoWay}">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate x:DataType="viewModels:UserListItem">
+                                        <Grid ColumnDefinitions="1*,1*,1*,1*">
+                                            <TextBlock Text="{x:Bind FirstName}" />
+                                            <TextBlock Text="{x:Bind LastName}" Grid.Column="1" />
+                                            <TextBlock Text="{x:Bind RoleDisplayName}" Grid.Column="2" />
+                                            <TextBlock Text="{x:Bind Status}" Grid.Column="3" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </StackPanel>
                     </StackPanel>
                 </Border>
 
@@ -104,7 +113,7 @@
                     <StackPanel Spacing="{StaticResource IcbdSpacingSmall}">
                         <TextBlock Text="Poslední změny"
                                    Style="{StaticResource IcbdSectionHeaderText}" />
-                        <TextBlock Text="Zatím nejsou žádné změny."
+                        <TextBlock Text="{Binding LastChangeMessage}"
                                    Style="{StaticResource IcbdBodyTextBlockStyle}" />
                     </StackPanel>
                 </Border>
@@ -114,51 +123,99 @@
                         Grid.Column="1"
                         Style="{StaticResource IcbdDashboardCardBaseStyle}"
                         Padding="{StaticResource IcbdPaddingL}">
-                    <StackPanel Spacing="{StaticResource IcbdSpacingSmall}">
-                        <TextBlock Text="Detail uživatele"
-                                   Style="{StaticResource IcbdSectionHeaderText}" />
-
-                        <StackPanel Spacing="{StaticResource IcbdSpacingSmall}">
-                            <StackPanel Spacing="2">
-                                <TextBlock Text="Uživatelské jméno"
-                                           Style="{StaticResource IcbdCaptionText}" />
-                                <TextBlock Text="{Binding EditUsername}"
-                                           Style="{StaticResource IcbdBodyTextBlockStyle}" />
+                    <Grid>
+                        <StackPanel Spacing="{StaticResource IcbdSpacingSmall}"
+                                    Visibility="{Binding UserSummaryVisibility}">
+                            <TextBlock Text="Uživatelé"
+                                       Style="{StaticResource IcbdSectionHeaderText}" />
+                            <TextBlock Style="{StaticResource IcbdBodyTextBlockStyle}">
+                                <Run Text="Celkem uživatelů: " />
+                                <Run Text="{Binding Users.Count}" />
+                            </TextBlock>
+                            <TextBlock Style="{StaticResource IcbdBodyTextBlockStyle}">
+                                <Run Text="Aktivní: " />
+                                <Run Text="{Binding ActiveUsers}" />
+                                <Run Text=" · Neaktivní: " />
+                                <Run Text="{Binding InactiveUsers}" />
+                            </TextBlock>
+                            <TextBlock Style="{StaticResource IcbdBodyTextBlockStyle}">
+                                <Run Text="Kmen: " />
+                                <Run Text="{Binding CoreEmployees}" />
+                                <Run Text=" · Subdodavatel: " />
+                                <Run Text="{Binding Subcontractors}" />
+                            </TextBlock>
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock Text="Role" Style="{StaticResource IcbdCaptionText}" />
+                                <TextBlock Style="{StaticResource IcbdBodyTextBlockStyle}">
+                                    <Run Text="Admin: " />
+                                    <Run Text="{Binding AdminCount}" />
+                                    <Run Text=" · Mistr: " />
+                                    <Run Text="{Binding MistrCount}" />
+                                </TextBlock>
+                                <TextBlock Style="{StaticResource IcbdBodyTextBlockStyle}">
+                                    <Run Text="Kontrolor: " />
+                                    <Run Text="{Binding KontrolorCount}" />
+                                    <Run Text=" · Technik: " />
+                                    <Run Text="{Binding TechnikCount}" />
+                                </TextBlock>
+                                <TextBlock Style="{StaticResource IcbdBodyTextBlockStyle}">
+                                    <Run Text="Předák: " />
+                                    <Run Text="{Binding PredakCount}" />
+                                    <Run Text=" · Dělník: " />
+                                    <Run Text="{Binding DelnikCount}" />
+                                </TextBlock>
                             </StackPanel>
-                            <StackPanel Spacing="2">
-                                <TextBlock Text="Zobrazované jméno"
-                                           Style="{StaticResource IcbdCaptionText}" />
-                                <TextBlock Text="{Binding EditDisplayName}"
-                                           Style="{StaticResource IcbdBodyTextBlockStyle}" />
-                            </StackPanel>
-                            <StackPanel Spacing="2">
-                                <TextBlock Text="Role"
-                                           Style="{StaticResource IcbdCaptionText}" />
-                                <TextBlock Text="{Binding EditRole}"
-                                           Style="{StaticResource IcbdBodyTextBlockStyle}" />
-                            </StackPanel>
-                            <StackPanel Spacing="2">
-                                <TextBlock Text="Číslo pracovníka"
-                                           Style="{StaticResource IcbdCaptionText}" />
-                                <TextBlock Text="{Binding EditWorkerNumber}"
-                                           Style="{StaticResource IcbdBodyTextBlockStyle}" />
-                            </StackPanel>
-                            <StackPanel Spacing="2">
-                                <TextBlock Text="Aktivní"
-                                           Style="{StaticResource IcbdCaptionText}" />
-                                <CheckBox IsChecked="{Binding EditIsActive}"
-                                          IsEnabled="False" />
-                            </StackPanel>
-                            <TextBlock Text="{Binding UserFormError}"
-                                       TextWrapping="Wrap"
-                                       Margin="0,4,0,0" />
-                            <!-- Hidden password fields kept for code-behind compatibility -->
-                            <PasswordBox x:Name="NewPasswordBox"
-                                         Visibility="Collapsed" />
-                            <PasswordBox x:Name="ConfirmPasswordBox"
-                                         Visibility="Collapsed" />
+                            <TextBlock Text="Vyberte uživatele ze seznamu pro detail."
+                                       Style="{StaticResource IcbdBodyTextBlockStyle}" />
                         </StackPanel>
-                    </StackPanel>
+
+                        <StackPanel Spacing="{StaticResource IcbdSpacingSmall}"
+                                    Visibility="{Binding UserDetailVisibility}">
+                            <TextBlock Text="Detail uživatele"
+                                       Style="{StaticResource IcbdSectionHeaderText}" />
+
+                            <StackPanel Spacing="{StaticResource IcbdSpacingSmall}">
+                                <StackPanel Spacing="2">
+                                    <TextBlock Text="Uživatelské jméno"
+                                               Style="{StaticResource IcbdCaptionText}" />
+                                    <TextBlock Text="{Binding EditUsername}"
+                                               Style="{StaticResource IcbdBodyTextBlockStyle}" />
+                                </StackPanel>
+                                <StackPanel Spacing="2">
+                                    <TextBlock Text="Zobrazované jméno"
+                                               Style="{StaticResource IcbdCaptionText}" />
+                                    <TextBlock Text="{Binding EditDisplayName}"
+                                               Style="{StaticResource IcbdBodyTextBlockStyle}" />
+                                </StackPanel>
+                                <StackPanel Spacing="2">
+                                    <TextBlock Text="Role"
+                                               Style="{StaticResource IcbdCaptionText}" />
+                                    <TextBlock Text="{Binding EditRole}"
+                                               Style="{StaticResource IcbdBodyTextBlockStyle}" />
+                                </StackPanel>
+                                <StackPanel Spacing="2">
+                                    <TextBlock Text="Číslo pracovníka"
+                                               Style="{StaticResource IcbdCaptionText}" />
+                                    <TextBlock Text="{Binding EditWorkerNumber}"
+                                               Style="{StaticResource IcbdBodyTextBlockStyle}" />
+                                </StackPanel>
+                                <StackPanel Spacing="2">
+                                    <TextBlock Text="Aktivní"
+                                               Style="{StaticResource IcbdCaptionText}" />
+                                    <CheckBox IsChecked="{Binding EditIsActive}"
+                                              IsEnabled="False" />
+                                </StackPanel>
+                                <TextBlock Text="{Binding UserFormError}"
+                                           TextWrapping="Wrap"
+                                           Margin="0,4,0,0" />
+                                <!-- Hidden password fields kept for code-behind compatibility -->
+                                <PasswordBox x:Name="NewPasswordBox"
+                                             Visibility="Collapsed" />
+                                <PasswordBox x:Name="ConfirmPasswordBox"
+                                             Visibility="Collapsed" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
                 </Border>
             </Grid>
         </ScrollViewer>

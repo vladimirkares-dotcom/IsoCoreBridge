@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Obecné styly pro prvky na stránkách se seznamy -->
+    <Style x:Key="StretchHorizontalButton" TargetType="Button">
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+    </Style>
+
+    <Style x:Key="StretchHorizontalSecondaryButton" TargetType="Button" BasedOn="{StaticResource IcbdButtonSecondaryStyle}">
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+    </Style>
+
+    <Style x:Key="StretchVerticalBorder" TargetType="Border" BasedOn="{StaticResource IcbdDashboardCardBaseStyle}">
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+    </Style>
+
+    <Style x:Key="ListFilterGrid" TargetType="Grid">
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="ColumnSpacing" Value="{StaticResource IcbdSpacingSmall}" />
+    </Style>
+
+    <!-- Styly pro položky v seznamu projektů -->
+    <Style x:Key="ProjectListCodeText" TargetType="TextBlock" BasedOn="{StaticResource IcbdListItemCaptionText}">
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
+
+    <Style x:Key="ProjectListTitleText" TargetType="TextBlock" BasedOn="{StaticResource IcbdListItemTitleText}">
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
+
+    <Style x:Key="ProjectListStatusText" TargetType="TextBlock" BasedOn="{StaticResource IcbdBodyTextBlockStyle}">
+        <Setter Property="Opacity" Value="0.8" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
+
+    <!-- Styly pro akční panely -->
+    <Style x:Key="PageActionsPanel" TargetType="StackPanel">
+        <Setter Property="Orientation" Value="Vertical" />
+        <Setter Property="Spacing" Value="{StaticResource IcbdSpacingSmall}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+    </Style>
+
+</ResourceDictionary>

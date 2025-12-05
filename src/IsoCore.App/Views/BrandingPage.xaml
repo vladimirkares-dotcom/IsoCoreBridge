@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<views:MenuPage
+    x:Class="IsoCore.App.Views.BrandingPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:views="using:IsoCore.App.Views"
+    xmlns:viewModels="using:IsoCore.App.ViewModels"
+    mc:Ignorable="d">
+
+    <views:MenuPage.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/FormStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </views:MenuPage.Resources>
+
+    <Grid Background="{StaticResource IcbdWindowBackgroundBrush}"
+          Style="{StaticResource IcbdPageGrid}">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="{StaticResource IcbdPaddingL}"
+                        Spacing="{StaticResource IcbdSpacingMedium}">
+                <TextBlock Text="Nastavení firmy"
+                           Style="{StaticResource IcbdHeadlineXLTextBlockStyle}" />
+
+                <StackPanel Style="{StaticResource IcbdErrorAreaStack}">
+                    <TextBlock Text="{Binding ErrorMessage}"
+                               Style="{StaticResource IcbdErrorText}" />
+                    <TextBlock Text="{Binding StatusMessage}"
+                               Style="{StaticResource IcbdCaptionText}" />
+                </StackPanel>
+
+                <StackPanel Spacing="{StaticResource IcbdSpacingSmall}">
+                    <TextBox Header="Kmenová firma"
+                             Text="{Binding CompanyName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                    <TextBox Header="Výchozí předvolba"
+                             Text="{Binding PhonePrefix, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                    <TextBox Header="Doména firemního e-mailu (@...)"
+                             Text="{Binding EmailDomain, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                    <TextBox Header="Ulice a číslo"
+                             Text="{Binding CompanyStreet, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                    <Grid ColumnDefinitions="2*,2*,1*"
+                          ColumnSpacing="{StaticResource IcbdSpacingSmall}">
+                        <TextBox Grid.Column="0"
+                                 Header="Město"
+                                 Text="{Binding CompanyCity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBox Grid.Column="1"
+                                 Header="PSČ"
+                                 Text="{Binding CompanyZip, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBox Grid.Column="2"
+                                 Header="Stát"
+                                 Text="{Binding CompanyCountry, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    </Grid>
+
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Left"
+                                Spacing="{StaticResource IcbdSpacingSmall}">
+                        <Button Content="Uložit nastavení"
+                                Style="{StaticResource IcbdPrimaryButton}"
+                                Command="{Binding SaveCommand}" />
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</views:MenuPage>

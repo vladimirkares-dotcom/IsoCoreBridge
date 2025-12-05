@@ -18,6 +18,8 @@ public sealed class UserAccount
     public string CompanyName { get; set; } = string.Empty;
     public string CompanyAddress { get; set; } = string.Empty;
     public string PhoneNumber { get; set; } = string.Empty;
+    public string PersonalNumber { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
     public bool MustChangePassword { get; set; }
 
     public string Role { get; set; } = string.Empty;

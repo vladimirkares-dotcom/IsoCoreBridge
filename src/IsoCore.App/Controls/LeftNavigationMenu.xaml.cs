@@ -32,6 +32,7 @@ public sealed partial class LeftNavigationMenu : UserControl
     public event RoutedEventHandler? UsersClicked;
     public event RoutedEventHandler? TemplatesClicked;
     public event RoutedEventHandler? SettingsClicked;
+    public event RoutedEventHandler? BrandingClicked;
 
     private void OnDashboardClicked(object sender, RoutedEventArgs e)
     {
@@ -78,5 +79,10 @@ public sealed partial class LeftNavigationMenu : UserControl
     private void OnSettingsClicked(object sender, RoutedEventArgs e)
     {
         SettingsClicked?.Invoke(this, e);
+    }
+
+    private void OnBrandingClicked(object sender, RoutedEventArgs e)
+    {
+        BrandingClicked?.Invoke(this, e);
     }
 }

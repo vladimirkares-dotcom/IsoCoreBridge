@@ -11,7 +11,12 @@
     mc:Ignorable="d">
 
     <views:MenuPage.Resources>
-        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ms-appx:///Styles/DetailPageStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        </ResourceDictionary>
     </views:MenuPage.Resources>
 
     <Grid Background="{StaticResource IcbdWindowBackgroundBrush}"
@@ -28,33 +33,30 @@
                         <TextBlock Text="{Binding ProjectDisplayName, FallbackValue='Detail projektu'}"
                                    Style="{StaticResource IcbdSectionHeaderText}" />
                         <TextBlock Text="{Binding StatusText, FallbackValue='Stav: ?'}"
-                                   Style="{StaticResource IcbdBodyStatusText}" />
+                                   Style="{StaticResource DetailHeaderStatusText}" />
                     </StackPanel>
 
                     <StackPanel Grid.Column="1"
-                                Orientation="Vertical"
-                                Style="{StaticResource IcbdRightAlignedStackPanel}"
-                                Spacing="{StaticResource IcbdSpacingSmall}">
+                                Style="{StaticResource DetailHeaderActionsPanel}">
                         <StackPanel Orientation="Vertical"
-                                    Style="{StaticResource IcbdRightAlignedStackPanel}"
-                                    Spacing="{StaticResource IcbdSpacingSmall}">
-                            <TextBlock Style="{StaticResource IcbdRightAlignedBodyText}">
+                                    Style="{StaticResource DetailHeaderDatePanel}" Spacing="{StaticResource IcbdSpacingSmall}">
+                            <TextBlock Style="{StaticResource DetailHeaderDateText}">
                                 <Run Text="Vytvořeno: " />
                                 <Run Text="{Binding CreatedAtText, FallbackValue='—'}" />
                             </TextBlock>
-                            <TextBlock Style="{StaticResource IcbdRightAlignedBodyText}">
+                            <TextBlock Style="{StaticResource DetailHeaderDateText}">
                                 <Run Text="Poslední změna: " />
                                 <Run Text="{Binding UpdatedAtText, FallbackValue='—'}" />
                             </TextBlock>
                         </StackPanel>
                         <Button Content="Zpět"
-                                Style="{StaticResource IcbdSecondaryButtonRightAligned}"
+                                Style="{StaticResource DetailBackButton}"
                                 Click="OnBackButtonClicked" />
                     </StackPanel>
                 </Grid>
 
                 <TextBlock Text="Základní informace"
-                           Style="{StaticResource IcbdSubheaderSectionSpacer}" />
+                           Style="{StaticResource DetailSectionHeader}" />
 
                 <StackPanel Spacing="{StaticResource IcbdSpacingSmall}">
                     <StackPanel Orientation="Horizontal"
@@ -78,7 +80,7 @@
                         <TextBlock Text="Popis:"
                                    Style="{StaticResource IcbdBodyTextBlockStyle}" />
                         <TextBlock Text="{Binding ProjectDescription, FallbackValue='—'}"
-                                   Style="{StaticResource IcbdBodyWrapText}" />
+                                   Style="{StaticResource WrappingTextBlock}" />
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal"
@@ -95,8 +97,7 @@
                 
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Spacing="{StaticResource IcbdSpacingSmall}">
-                        <Grid Margin="0,24,0,0"
-                              ColumnSpacing="{StaticResource IcbdSpacingLarge}">
+                        <Grid Style="{StaticResource SectionContentTopMarginGrid}" ColumnSpacing="{StaticResource IcbdSpacingLarge}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="2*" />
                                 <ColumnDefinition Width="*" />
@@ -125,18 +126,17 @@
                                                       IsItemClickEnabled="False">
                                                 <ListView.ItemTemplate>
                                                     <DataTemplate>
-                                                        <StackPanel Padding="8"
-                                                                    Spacing="2">
+                                                        <StackPanel Style="{StaticResource BuildingObjectListItemPanel}">
                                                             <TextBlock Text="{Binding Code}"
-                                                                       Style="{StaticResource IcbdListItemMediumTitle}" />
+                                                                       Style="{StaticResource BuildingObjectListCodeText}" />
                                                             <TextBlock Text="{Binding Name}"
-                                                                       Style="{StaticResource IcbdListItemSecondaryLine}" />
+                                                                       Style="{StaticResource BuildingObjectListNameText}" />
                                                         </StackPanel>
                                                     </DataTemplate>
                                                 </ListView.ItemTemplate>
                                             </ListView>
                                             <TextBlock Text="Zatím nejsou založeny žádné stavební objekty."
-                                                       Style="{StaticResource IcbdEmptyStateText}"
+                                                       Style="{StaticResource EmptyListPlaceholderText}"
                                                        Visibility="{Binding HasNoBuildingObjects, Converter={StaticResource BooleanToVisibilityConverter}}" />
                                         </Grid>
                                     </StackPanel>
@@ -150,9 +150,9 @@
                                     <StackPanel Visibility="{Binding HasNoSelectedBuildingObject, Converter={StaticResource BooleanToVisibilityConverter}}">
                                         <TextBlock Text="Přehled stavebních objektů" Style="{StaticResource IcbdSubheaderText}" />
                                         <TextBlock Text="{Binding TotalBuildingObjects, FallbackValue='-'}" Style="{StaticResource IcbdBodyTextBlockStyle}" />
-                                        <TextBlock Text="Celková výměra: -" Style="{StaticResource IcbdBodyTextBlockStyle}" />
-                                        <TextBlock Text="Vyberte SO vlevo pro detail."
-                                                   Style="{StaticResource IcbdBodyWrapText}" />
+                                        <TextBlock Text="Celková plocha: -" Style="{StaticResource IcbdBodyTextBlockStyle}" />
+                                        <TextBlock Text="Vyberte stavební objekt vlevo pro zobrazení detailu."
+                                                   Style="{StaticResource WrappingTextBlock}" />
                                     </StackPanel>
 
                                     <Grid Visibility="{Binding HasSelectedBuildingObject, Converter={StaticResource BooleanToVisibilityConverter}}">
@@ -165,10 +165,8 @@
                                                     Visibility="{Binding IsNotEditing, Converter={StaticResource BooleanToVisibilityConverter}}">
                                             <StackPanel Spacing="{StaticResource IcbdSpacingSmall}">
                                                 <TextBlock Text="Detail stavebního objektu" Style="{StaticResource IcbdSubheaderText}" />
-                                                <TextBlock Text="{Binding SelectedBuildingObject.Code, FallbackValue='SO ?'}"
-                                                           Style="{StaticResource IcbdBodyEllipsisText}" />
-                                                <TextBlock Text="{Binding SelectedBuildingObject.Name, FallbackValue='(bez názvu)'}"
-                                                           Style="{StaticResource IcbdBodyEllipsisSubtleText}" />
+                                                <TextBlock Text="{Binding SelectedBuildingObject.Code, FallbackValue='SO ?'}" Style="{StaticResource BuildingObjectDetailCodeText}" />
+                                                <TextBlock Text="{Binding SelectedBuildingObject.Name, FallbackValue='(bez názvu)'}" Style="{StaticResource BuildingObjectDetailNameText}" />
 
                                                 <Grid ColumnSpacing="{StaticResource IcbdSpacingMedium}"
                                                       RowSpacing="{StaticResource IcbdSpacingSmall}">
@@ -239,7 +237,7 @@
                                                     <TextBlock Text="{Binding SelectedBuildingObject.Notes, FallbackValue='(bez poznámky)'}"
                                                                Grid.Row="2"
                                                                Grid.Column="1"
-                                                               Style="{StaticResource IcbdBodyWrapText}" />
+                                                               Style="{StaticResource WrappingTextBlock}" />
                                                 </Grid>
                                             </StackPanel>
 
@@ -308,9 +306,9 @@
 
                                             <StackPanel Spacing="{StaticResource IcbdSpacingSmall}">
                                                 <TextBlock Text="Nesoulad v podkladech" Style="{StaticResource IcbdSubheaderText}" />
-                                                <TextBlock Text="{Binding SelectedBuildingObject.HasBoqDiscrepancy, FallbackValue='-'}" Style="{StaticResource IcbdBodyTextBlockStyle}" />
+                                                <TextBlock Text="{Binding SelectedBuildingObject.HasBoqDiscrepancy, FallbackValue='Nezjištěn'}" Style="{StaticResource IcbdBodyTextBlockStyle}" />
                                                 <TextBlock Text="{Binding SelectedBuildingObject.BoqVsRealDifferenceNote, FallbackValue='(bez zaznamenaného nesouladu v podkladech)'}"
-                                                           Style="{StaticResource IcbdBodyWrapText}" />
+                                                           Style="{StaticResource WrappingTextBlock}" />
                                             </StackPanel>
                                         </StackPanel>
 
@@ -323,7 +321,7 @@
 
                                             <TextBlock Grid.Row="0"
                                                        Text="Upravit stavební objekt"
-                                                       Style="{StaticResource IcbdSubheaderTight}" />
+                                                       Style="{StaticResource DetailSectionHeader}" />
 
                                             <StackPanel Grid.Row="1"
                                                         Spacing="{StaticResource IcbdSpacingMedium}">
@@ -366,8 +364,8 @@
                                                                       OnContent="Ano"
                                                                       OffContent="Ne" />
                                                         <TextBox Header="Poznámka"
-                                                                 Style="{StaticResource IcbdInputTextMultiline}"
-                                                                 Text="{Binding EditableBuildingObject.Notes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                                                 Text="{Binding EditableBuildingObject.Notes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                 Style="{StaticResource MultilineTextBox}" />
                                                     </StackPanel>
 
                                                     <StackPanel Spacing="{StaticResource IcbdSpacingSmall}">
@@ -391,11 +389,11 @@
                                                         <ToggleSwitch Header="Nesoulad"
                                                                       IsOn="{Binding EditableBuildingObject.HasBoqDiscrepancy, Mode=TwoWay}" />
                                                         <TextBox Header="Poznámka k nesouladu"
-                                                                 Style="{StaticResource IcbdInputTextMultiline}"
-                                                                 Text="{Binding EditableBuildingObject.BoqVsRealDifferenceNote, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                                                 Text="{Binding EditableBuildingObject.BoqVsRealDifferenceNote, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                 Style="{StaticResource MultilineTextBox}" />
                                                     </StackPanel>
 
-                                                    <StackPanel Style="{StaticResource IcbdRightAlignedActionRow}">
+                                                    <StackPanel Style="{StaticResource FormActionsPanel}">
                                                         <Button Content="Zrušit"
                                                                 Command="{Binding CancelBuildingObjectEditCommand}" />
                                                         <Button Content="Uložit změny"
@@ -413,13 +411,13 @@
 
                 <StackPanel Spacing="{StaticResource IcbdSpacingSmall}">
                             <TextBlock Text="Výpočty a souhrny"
-                                       Style="{StaticResource IcbdSubheaderSectionSpacer}" />
+                                       Style="{StaticResource DetailSectionHeaderNoBottomMargin}" /> 
                             <TextBlock Text="Výpočty, souhrny a přehledy budou doplněny později."
                                        Style="{StaticResource IcbdBodyTextBlockStyle}" />
                         </StackPanel>
                         <StackPanel Spacing="{StaticResource IcbdSpacingSmall}">
-                            <TextBlock Text="Poznámky a dokumenty"
-                                       Style="{StaticResource IcbdSubheaderSectionSpacer}" />
+                            <TextBlock Text="Poznámky a dokumentace"
+                                       Style="{StaticResource DetailSectionHeaderNoBottomMargin}" />
                             <TextBlock Text="Poznámky, deník a dokumenty budou doplněny později."
                                        Style="{StaticResource IcbdBodyTextBlockStyle}" />
                         </StackPanel>

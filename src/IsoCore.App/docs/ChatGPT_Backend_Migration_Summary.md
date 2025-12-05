@@ -1,6 +1,11 @@
 ﻿ChatGPT, here is what is currently implemented in the clean IsoCoreBridge project and what you can safely migrate next (backend only, no XAML or build changes).
 
 ## Current State
+
+Latest updates (2025-12-05):
+- Přidána stránka Nastavení firmy (`BrandingPage`) + `CompanySettingsViewModel`; `AppStateService` nyní drží kmenovou firmu, výchozí telefonní předvolbu, e-mailovou doménu a adresu (ulice/město/PSČ/stát) a vystavuje `CompanySettingsChanged`.
+- `UsersViewModel` při tvorbě předvyplňuje firmu/předvolbu z nastavení, generuje login z jména+příjmení (bez diakritiky, formát `jmeno.prijmeni`, unikátní suffix při kolizi) a e-mail `login@{doména}`. Manuální editace loginu/e-mailu jsou respektovány; po uložení se edit page vrací na seznam.
+- Seznam uživatelů správně mapuje jméno/roli pro nové uživatele; levé menu má položku „Nastavení firmy“ (dříve Branding).
 - Domain models: `ProjectInfo`, `BuildingObjectInfo`, `CalcProfile`, `PerformanceEntry`, `ProjectStatus`, `UserAccount`, `Roles` (role constants + display names).
 - Core services/storage: `EncryptionService` (DPAPI-backed AES key), `EncryptedProjectStorageService` + `IProjectStorage` + `ProjectStorageManager` (encrypted project list persistence), `ProjectPathService` (local folders), `PasswordHasher` (SHA256), `AppStateService` (current project/user/date) with `ProjectRegistry` + `AppState` classes in `src/IsoCore.App/State`.
 - ViewModels present: `DashboardViewModel`, `ProjectsViewModel`, `OverviewsViewModel`, `UsersViewModel`, `UserDetailViewModel`, `ChangePasswordViewModel`, `ProjectDetailPageViewModel`, `SettingsPageViewModel`, `SplashViewModel`, helper `RoleOption`, base `ViewModelBase`.

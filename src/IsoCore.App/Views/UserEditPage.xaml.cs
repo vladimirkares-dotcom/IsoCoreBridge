@@ -1,5 +1,6 @@
 using System;
 using IsoCore.App.ViewModels;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 
@@ -69,10 +70,20 @@ public sealed partial class UserEditPage : MenuPage
 
     private void OnUserSaved(object? sender, bool success)
     {
-        if (success)
+        var dispatcher = DispatcherQueue;
+        if (dispatcher != null)
         {
-            // On successful save, navigate back to the UsersPage.
-            NavigateTo<UsersPage>();
+            dispatcher.TryEnqueue(() =>
+            {
+                if (success)
+                {
+                    Frame?.GoBack();
+                }
+            });
+        }
+        else if (success)
+        {
+            Frame?.GoBack();
         }
     }
 }

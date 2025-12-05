@@ -14,7 +14,14 @@ public interface IAppStateService
     UserAccount? CurrentUser { get; }
     bool IsAdmin { get; }
     string CoreCompanyName { get; }
+    string DefaultPhonePrefix { get; }
+    string EmailDomain { get; }
+    string CompanyStreet { get; }
+    string CompanyCity { get; }
+    string CompanyZip { get; }
+    string CompanyCountry { get; }
     string? PendingPasswordChangeUsername { get; }
+    event EventHandler? CompanySettingsChanged;
 
     event EventHandler<ProjectInfo?>? CurrentProjectChanged;
     event EventHandler<DateOnly>? CurrentDateChanged;
@@ -29,6 +36,7 @@ public interface IAppStateService
     void Logout();
     void RequestPasswordChange(string username);
     void ClearPasswordChangeRequest();
+    void UpdateCompanySettings(string? companyName, string? phonePrefix, string? emailDomain, string? street, string? city, string? zip, string? country);
 }
 
 public class AppStateService : IAppStateService
@@ -40,6 +48,20 @@ public class AppStateService : IAppStateService
     private BuildingObjectEditSession? _currentBuildingObjectEditSession;
     private UserAccount? _currentUser;
     private string? _pendingPasswordChangeUsername;
+    private const string DefaultCompanyName = "Stavby mostů a.s.";
+    private const string DefaultPhonePrefixValue = "+420";
+    private const string DefaultEmailDomainValue = "example.com";
+    private const string DefaultStreetValue = "";
+    private const string DefaultCityValue = "";
+    private const string DefaultZipValue = "";
+    private const string DefaultCountryValue = "Česká republika";
+    private string _coreCompanyName = DefaultCompanyName;
+    private string _defaultPhonePrefix = DefaultPhonePrefixValue;
+    private string _emailDomain = DefaultEmailDomainValue;
+    private string _companyStreet = DefaultStreetValue;
+    private string _companyCity = DefaultCityValue;
+    private string _companyZip = DefaultZipValue;
+    private string _companyCountry = DefaultCountryValue;
 
     public AppStateService(ProjectRegistry projectRegistry)
     {
@@ -64,13 +86,20 @@ public class AppStateService : IAppStateService
     }
     public UserAccount? CurrentUser => _currentUser;
     public bool IsAdmin => string.Equals(_currentUser?.Role, Roles.Administrator, StringComparison.OrdinalIgnoreCase);
-    public string CoreCompanyName { get; } = "Stavby mostů a.s.";
+    public string CoreCompanyName => _coreCompanyName;
+    public string DefaultPhonePrefix => _defaultPhonePrefix;
+    public string EmailDomain => _emailDomain;
+    public string CompanyStreet => _companyStreet;
+    public string CompanyCity => _companyCity;
+    public string CompanyZip => _companyZip;
+    public string CompanyCountry => _companyCountry;
 
     public event EventHandler<ProjectInfo?>? CurrentProjectChanged;
     public event EventHandler<DateOnly>? CurrentDateChanged;
     public event EventHandler<BuildingObjectInfo?>? CurrentBuildingObjectChanged;
     public event EventHandler? BuildingObjectEditSessionChanged;
     public event EventHandler? CurrentUserChanged;
+    public event EventHandler? CompanySettingsChanged;
 
     public void SetCurrentProject(ProjectInfo? project)
     {
@@ -122,5 +151,37 @@ public class AppStateService : IAppStateService
     public void ClearPasswordChangeRequest()
     {
         _pendingPasswordChangeUsername = null;
+    }
+
+    public void UpdateCompanySettings(string? companyName, string? phonePrefix, string? emailDomain, string? street, string? city, string? zip, string? country)
+    {
+        var normalizedName = string.IsNullOrWhiteSpace(companyName) ? DefaultCompanyName : companyName.Trim();
+        var normalizedPrefix = string.IsNullOrWhiteSpace(phonePrefix) ? DefaultPhonePrefixValue : phonePrefix.Trim();
+        var normalizedDomain = emailDomain?.Trim() ?? string.Empty;
+        var normalizedStreet = street?.Trim() ?? DefaultStreetValue;
+        var normalizedCity = city?.Trim() ?? DefaultCityValue;
+        var normalizedZip = zip?.Trim() ?? DefaultZipValue;
+        var normalizedCountry = string.IsNullOrWhiteSpace(country) ? DefaultCountryValue : country.Trim();
+
+        if (string.Equals(_coreCompanyName, normalizedName, StringComparison.OrdinalIgnoreCase) &&
+            string.Equals(_defaultPhonePrefix, normalizedPrefix, StringComparison.OrdinalIgnoreCase) &&
+            string.Equals(_emailDomain, normalizedDomain, StringComparison.OrdinalIgnoreCase) &&
+            string.Equals(_companyStreet, normalizedStreet, StringComparison.OrdinalIgnoreCase) &&
+            string.Equals(_companyCity, normalizedCity, StringComparison.OrdinalIgnoreCase) &&
+            string.Equals(_companyZip, normalizedZip, StringComparison.OrdinalIgnoreCase) &&
+            string.Equals(_companyCountry, normalizedCountry, StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        _coreCompanyName = normalizedName;
+        _defaultPhonePrefix = normalizedPrefix;
+        _emailDomain = normalizedDomain;
+        _companyStreet = normalizedStreet;
+        _companyCity = normalizedCity;
+        _companyZip = normalizedZip;
+        _companyCountry = normalizedCountry;
+
+        CompanySettingsChanged?.Invoke(this, EventArgs.Empty);
     }
 }

@@ -93,7 +93,7 @@ public sealed partial class UsersPage : MenuPage
     {
         ViewModel.StartCreateUser();
         SetUserFormError(string.Empty);
-        NavigateTo<UserEditPage>();
+        Frame?.Navigate(typeof(UserEditPage), ViewModel);
     }
 
     private void EditUserActionButton_Click(object sender, RoutedEventArgs e)
@@ -107,7 +107,7 @@ public sealed partial class UsersPage : MenuPage
         }
 
         ViewModel.StartEditSelectedUser();
-        NavigateTo<UserEditPage>();
+        Frame?.Navigate(typeof(UserEditPage), ViewModel);
     }
 
     private async void DeleteUser_Click(object sender, RoutedEventArgs e)

@@ -23,6 +23,7 @@ public sealed partial class MainShellPage : Page
             PageRoute.Dashboard => typeof(DashboardPage),
             PageRoute.Projects => typeof(ProjectsPage),
             PageRoute.SettingsUsers => typeof(UsersPage),
+            PageRoute.SettingsBranding => typeof(BrandingPage),
             _ => null
         };
 
@@ -54,5 +55,10 @@ public sealed partial class MainShellPage : Page
     private void OnUsersClicked(object sender, RoutedEventArgs e)
     {
         NavigateTo(PageRoute.SettingsUsers);
+    }
+
+    private void OnBrandingClicked(object sender, RoutedEventArgs e)
+    {
+        NavigateTo(PageRoute.SettingsBranding);
     }
 }

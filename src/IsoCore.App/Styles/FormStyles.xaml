@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Styly pro formulářové prvky -->
+    <Style x:Key="PhonePrefixComboBox" TargetType="ComboBox">
+        <Setter Property="Width" Value="90" />
+    </Style>
+
+</ResourceDictionary>

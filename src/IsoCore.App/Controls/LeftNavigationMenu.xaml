@@ -186,11 +186,11 @@
                         </StackPanel>
                     </Button>
                     <Button Style="{StaticResource IcbdMenuButton}"
-                            IsEnabled="False">
+                            Click="OnBrandingClicked">
                         <StackPanel Orientation="Horizontal"
                                     Spacing="{StaticResource IcbdSpacingSmall}"
                                     VerticalAlignment="Center">
-                            <TextBlock Text="Branding"
+                            <TextBlock Text="Nastavení firmy"
                                        Style="{StaticResource IcbdNavItemTextBlockStyle}" />
                         </StackPanel>
                     </Button>

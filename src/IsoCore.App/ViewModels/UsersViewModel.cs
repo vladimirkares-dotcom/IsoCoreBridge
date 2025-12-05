@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Microsoft.UI.Xaml;
 using IsoCore.App.Services.Auth;
 using IsoCore.App.Services;
 using IsoCore.Domain;
@@ -29,6 +30,8 @@ public class UserListItem
     public string CompanyName { get; set; } = string.Empty;
     public string CompanyAddress { get; set; } = string.Empty;
     public string PhoneNumber { get; set; } = string.Empty;
+    public string PersonalNumber { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
     public string Note { get; set; } = string.Empty;
 
     public string RoleDisplayName => Roles.GetDisplayName(Role);
@@ -55,9 +58,31 @@ public class UsersViewModel : ViewModelBase
     private string _editCompanyName = string.Empty;
     private string _editCompanyAddress = string.Empty;
     private string _editPhoneNumber = string.Empty;
+    private string _editPhonePrefix = "+420";
+    private string _editEmail = string.Empty;
     private string _editNote = string.Empty;
+    private string _editPersonalNumber = string.Empty;
     private bool _editIsActive = true;
     private bool _isBusy;
+    private bool _loginEditedManually;
+    private bool _suppressLoginManualFlag;
+    private bool _jobTitleEditedManually;
+    private bool _suppressJobTitleManualFlag;
+    private string _lastSuggestedJobTitle = string.Empty;
+    private bool _isLoginReadOnly = true;
+    private bool _emailEditedManually;
+    private bool _suppressEmailManualFlag;
+    private int _totalUsers;
+    private int _activeUsers;
+    private int _inactiveUsers;
+    private int _coreEmployees;
+    private int _subcontractors;
+    private int _adminCount;
+    private int _mistrCount;
+    private int _kontrolorCount;
+    private int _technikCount;
+    private int _predakCount;
+    private int _delnikCount;
 
     public Microsoft.UI.Xaml.Visibility AdminSectionVisibility => _appState.IsAdmin ? Microsoft.UI.Xaml.Visibility.Visible : Microsoft.UI.Xaml.Visibility.Collapsed;
     private bool _isNewUser;
@@ -67,6 +92,7 @@ public class UsersViewModel : ViewModelBase
     private readonly Dictionary<string, string> _domainToDisplayRoleMap;
     private string? _currentEditUserId;
     private string? _currentEditUserLogin;
+    private bool IsCreateMode => IsNewUser || string.IsNullOrWhiteSpace(_currentEditUserId);
 
     public ObservableCollection<UserListItem> Users { get; } = new();
 
@@ -74,10 +100,12 @@ public class UsersViewModel : ViewModelBase
         new[] { "Administrátor", "Mistr", "Kontrolor", "Technik", "Předák", "Dělník" };
 
     public IReadOnlyList<RoleOption> RoleOptions { get; }
+    public IReadOnlyList<string> PhonePrefixes { get; }
 
     public ICommand NewUserCommand { get; }
     public ICommand SaveUserCommand { get; }
     public ICommand DeleteUserCommand { get; }
+    public ICommand AllowLoginEditCommand { get; }
 
     public UserListItem? SelectedUser
     {
@@ -87,8 +115,82 @@ public class UsersViewModel : ViewModelBase
             if (SetProperty(ref _selectedUser, value))
             {
                 OnSelectedUserChanged(value);
+                OnPropertyChanged(nameof(HasSelectedUser));
+                OnPropertyChanged(nameof(HasNoSelectedUser));
+                OnPropertyChanged(nameof(UserDetailVisibility));
+                OnPropertyChanged(nameof(UserSummaryVisibility));
             }
         }
+    }
+
+    public bool HasSelectedUser => SelectedUser != null;
+    public bool HasNoSelectedUser => SelectedUser == null;
+    public Visibility UserDetailVisibility => HasSelectedUser ? Visibility.Visible : Visibility.Collapsed;
+    public Visibility UserSummaryVisibility => HasSelectedUser ? Visibility.Collapsed : Visibility.Visible;
+    public int TotalUsers
+    {
+        get => _totalUsers;
+        private set => SetProperty(ref _totalUsers, value);
+    }
+
+    public int ActiveUsers
+    {
+        get => _activeUsers;
+        private set => SetProperty(ref _activeUsers, value);
+    }
+
+    public int InactiveUsers
+    {
+        get => _inactiveUsers;
+        private set => SetProperty(ref _inactiveUsers, value);
+    }
+
+    public int CoreEmployees
+    {
+        get => _coreEmployees;
+        private set => SetProperty(ref _coreEmployees, value);
+    }
+
+    public int Subcontractors
+    {
+        get => _subcontractors;
+        private set => SetProperty(ref _subcontractors, value);
+    }
+
+    public int AdminCount
+    {
+        get => _adminCount;
+        private set => SetProperty(ref _adminCount, value);
+    }
+
+    public int MistrCount
+    {
+        get => _mistrCount;
+        private set => SetProperty(ref _mistrCount, value);
+    }
+
+    public int KontrolorCount
+    {
+        get => _kontrolorCount;
+        private set => SetProperty(ref _kontrolorCount, value);
+    }
+
+    public int TechnikCount
+    {
+        get => _technikCount;
+        private set => SetProperty(ref _technikCount, value);
+    }
+
+    public int PredakCount
+    {
+        get => _predakCount;
+        private set => SetProperty(ref _predakCount, value);
+    }
+
+    public int DelnikCount
+    {
+        get => _delnikCount;
+        private set => SetProperty(ref _delnikCount, value);
     }
 
     public string EditUsername
@@ -124,6 +226,9 @@ public class UsersViewModel : ViewModelBase
             if (SetProperty(ref _editRole, normalizedRole))
             {
                 UpdateCommandStates();
+                OnPropertyChanged(nameof(NonWorkerVisibility));
+                OnPropertyChanged(nameof(WorkerOnlyVisibility));
+                ApplyJobTitleSuggestionForRole();
             }
         }
     }
@@ -135,7 +240,12 @@ public class UsersViewModel : ViewModelBase
         {
             if (SetProperty(ref _editLogin, value))
             {
+                if (!_suppressLoginManualFlag)
+                {
+                    _loginEditedManually = true;
+                }
                 UpdateCommandStates();
+                UpdateEmailFromLoginIfNeeded();
             }
         }
     }
@@ -185,7 +295,16 @@ public class UsersViewModel : ViewModelBase
     public string EditJobTitle
     {
         get => _editJobTitle;
-        set => SetProperty(ref _editJobTitle, value);
+        set
+        {
+            if (SetProperty(ref _editJobTitle, value))
+            {
+                if (!_suppressJobTitleManualFlag)
+                {
+                    _jobTitleEditedManually = true;
+                }
+            }
+        }
     }
 
     public string EditCompanyName
@@ -210,6 +329,33 @@ public class UsersViewModel : ViewModelBase
     {
         get => _editPhoneNumber;
         set => SetProperty(ref _editPhoneNumber, value);
+    }
+
+    public string EditPhonePrefix
+    {
+        get => _editPhonePrefix;
+        set => SetProperty(ref _editPhonePrefix, value);
+    }
+
+    public string EditEmail
+    {
+        get => _editEmail;
+        set
+        {
+            if (SetProperty(ref _editEmail, value))
+            {
+                if (!_suppressEmailManualFlag)
+                {
+                    _emailEditedManually = true;
+                }
+            }
+        }
+    }
+
+    public string EditPersonalNumber
+    {
+        get => _editPersonalNumber;
+        set => SetProperty(ref _editPersonalNumber, value);
     }
 
     public bool EditIsActive
@@ -239,7 +385,27 @@ public class UsersViewModel : ViewModelBase
     public string UserFormSuccess
     {
         get => _userFormSuccess;
-        set => SetProperty(ref _userFormSuccess, value);
+        set
+        {
+            if (SetProperty(ref _userFormSuccess, value))
+            {
+                OnPropertyChanged(nameof(LastChangeMessage));
+            }
+        }
+    }
+
+    public string LastChangeMessage =>
+        string.IsNullOrWhiteSpace(UserFormSuccess) ? "Zatím nejsou žádné změny." : UserFormSuccess;
+
+    private bool IsWorkerRole =>
+        string.Equals(NormalizeRoleForDomain(EditRole), Roles.Delnik, StringComparison.OrdinalIgnoreCase);
+
+    public Visibility NonWorkerVisibility => IsWorkerRole ? Visibility.Collapsed : Visibility.Visible;
+    public Visibility WorkerOnlyVisibility => IsWorkerRole ? Visibility.Visible : Visibility.Collapsed;
+    public bool IsLoginReadOnly
+    {
+        get => _isLoginReadOnly;
+        private set => SetProperty(ref _isLoginReadOnly, value);
     }
 
     public string CurrentUserLabel
@@ -266,16 +432,19 @@ public class UsersViewModel : ViewModelBase
         _authService = authService ?? throw new ArgumentNullException(nameof(authService));
         _appState = appState ?? throw new ArgumentNullException(nameof(appState));
         RoleOptions = AvailableRoles.Select(role => new RoleOption(role, role)).ToList();
+        PhonePrefixes = new[] { _appState.DefaultPhonePrefix };
         _displayToDomainRoleMap = BuildDisplayToDomainRoleMap();
         _domainToDisplayRoleMap = BuildDomainToDisplayRoleMap();
 
         NewUserCommand = new RelayCommand(_ => StartCreateUser(), _ => !IsBusy);
         SaveUserCommand = new RelayCommand(async _ => await SaveUserAsync().ConfigureAwait(false), _ => CanExecuteSaveUser());
         DeleteUserCommand = new RelayCommand(async _ => await DeleteSelectedUserAsync().ConfigureAwait(false), _ => CanExecuteDeleteUser());
+        AllowLoginEditCommand = new RelayCommand(_ => EnableLoginEdit());
 
         ReloadUsersFromService();
         StartNewUser();
         _appState.CurrentUserChanged += OnCurrentUserChanged;
+        _loginEditedManually = false;
     }
 
     public bool IsBusy
@@ -311,27 +480,19 @@ public class UsersViewModel : ViewModelBase
                     Users.Clear();
                     foreach (var u in allUsers)
                     {
-                        Users.Add(new UserListItem
-                        {
-                            Id = u.Id,
-                            Username = u.Username,
-                            DisplayName = u.DisplayName,
-                            Role = u.Role,
-                            Login = u.Login,
-                            WorkerNumber = u.WorkerNumber,
-                            TitleBefore = u.TitleBefore,
-                            FirstName = u.FirstName,
-                            LastName = u.LastName,
-                            TitleAfter = u.TitleAfter,
-                            JobTitle = u.JobTitle,
-                            CompanyName = u.CompanyName,
-                            CompanyAddress = u.CompanyAddress,
-                            PhoneNumber = u.PhoneNumber,
-                            Note = u.Note,
-                            IsActive = u.IsActive
-                        });
+                        Users.Add(ToUserListItem(u));
                     }
+                    UpdateAggregates();
                 });
+            }
+            else
+            {
+                Users.Clear();
+                foreach (var u in allUsers)
+                {
+                    Users.Add(ToUserListItem(u));
+                }
+                UpdateAggregates();
             }
         }
         finally
@@ -372,6 +533,8 @@ public class UsersViewModel : ViewModelBase
                 CompanyName = SelectedUser.CompanyName,
                 CompanyAddress = SelectedUser.CompanyAddress,
                 PhoneNumber = SelectedUser.PhoneNumber,
+                PersonalNumber = SelectedUser.PersonalNumber,
+                Email = SelectedUser.Email,
                 Note = SelectedUser.Note,
                 IsActive = SelectedUser.IsActive
             };
@@ -437,7 +600,8 @@ public class UsersViewModel : ViewModelBase
                 JobTitle = EditJobTitle.Trim(),
                 CompanyName = EditCompanyName.Trim(),
                 CompanyAddress = EditCompanyAddress.Trim(),
-                PhoneNumber = EditPhoneNumber.Trim(),
+                PhoneNumber = BuildFullPhoneNumber(EditPhonePrefix, EditPhoneNumber),
+                PersonalNumber = EditPersonalNumber.Trim(),
                 Note = EditNote.Trim(),
                 IsActive = EditIsActive
             };
@@ -471,7 +635,9 @@ public class UsersViewModel : ViewModelBase
             EditJobTitle = SelectedUser.JobTitle;
             EditCompanyName = SelectedUser.CompanyName;
             EditCompanyAddress = SelectedUser.CompanyAddress;
-            EditPhoneNumber = SelectedUser.PhoneNumber;
+            SetPhoneFieldsFromStored(SelectedUser.PhoneNumber);
+            EditPersonalNumber = SelectedUser.PersonalNumber;
+            EditEmail = SelectedUser.Email;
             EditNote = SelectedUser.Note;
             EditIsActive = SelectedUser.IsActive;
             IsNewUser = false;
@@ -479,6 +645,13 @@ public class UsersViewModel : ViewModelBase
             UserFormSuccess = string.Empty;
             _currentEditUserId = SelectedUser.Id;
             _currentEditUserLogin = string.IsNullOrWhiteSpace(SelectedUser.Login) ? SelectedUser.Username : SelectedUser.Login;
+            _jobTitleEditedManually = !string.IsNullOrWhiteSpace(EditJobTitle);
+            _lastSuggestedJobTitle = EditJobTitle;
+            if (!_jobTitleEditedManually)
+            {
+                ApplyJobTitleSuggestionForRole();
+            }
+            IsLoginReadOnly = true;
         }
     }
 
@@ -497,6 +670,11 @@ public class UsersViewModel : ViewModelBase
         UserFormSuccess = string.Empty;
         _currentEditUserId = null;
         _currentEditUserLogin = null;
+        _loginEditedManually = false;
+        _jobTitleEditedManually = false;
+        _emailEditedManually = false;
+        ApplyJobTitleSuggestionForRole();
+        IsLoginReadOnly = true;
     }
 
     public void StartEditSelectedUser()
@@ -513,11 +691,15 @@ public class UsersViewModel : ViewModelBase
         _currentEditUserLogin = string.IsNullOrWhiteSpace(SelectedUser.Login) ? SelectedUser.Username : SelectedUser.Login;
         UserFormError = string.Empty;
         UserFormSuccess = string.Empty;
+        _loginEditedManually = false;
+        IsLoginReadOnly = true;
     }
 
     public async Task<bool> SaveCurrentUserAsync(string? newPassword, string? confirmPassword)
     {
         UserFormError = string.Empty;
+
+        EnsureLoginForNewUser();
 
         if (string.IsNullOrWhiteSpace(EditUsername))
         {
@@ -557,7 +739,9 @@ public class UsersViewModel : ViewModelBase
             JobTitle = EditJobTitle.Trim(),
             CompanyName = EditCompanyName.Trim(),
             CompanyAddress = EditCompanyAddress.Trim(),
-            PhoneNumber = EditPhoneNumber.Trim(),
+            PhoneNumber = BuildFullPhoneNumber(EditPhonePrefix, EditPhoneNumber),
+            PersonalNumber = EditPersonalNumber.Trim(),
+            Email = EditEmail.Trim(),
             Note = EditNote.Trim(),
             IsActive = EditIsActive
         };
@@ -642,25 +826,7 @@ public class UsersViewModel : ViewModelBase
 
         foreach (var u in allUsers)
         {
-            var item = new UserListItem
-            {
-                Id = u.Id,
-                Username = u.Username,
-                DisplayName = u.DisplayName,
-                Role = u.Role,
-                Login = u.Login,
-                WorkerNumber = u.WorkerNumber,
-                TitleBefore = u.TitleBefore,
-                FirstName = u.FirstName,
-                LastName = u.LastName,
-                TitleAfter = u.TitleAfter,
-                JobTitle = u.JobTitle,
-                CompanyName = u.CompanyName,
-                CompanyAddress = u.CompanyAddress,
-                PhoneNumber = u.PhoneNumber,
-                Note = u.Note,
-                IsActive = u.IsActive
-            };
+            var item = ToUserListItem(u);
 
             Users.Add(item);
 
@@ -676,11 +842,62 @@ public class UsersViewModel : ViewModelBase
             }
         }
 
+        UpdateAggregates();
+
         SelectedUser = newlySelected;
         if (newlySelected == null)
         {
             StartNewUser();
         }
+    }
+
+    private UserListItem ToUserListItem(UserAccount user)
+    {
+        return new UserListItem
+        {
+            Id = user.Id,
+            Username = user.Username,
+            DisplayName = BuildDisplayName(user),
+            Role = user.Role,
+            Login = user.Login,
+            WorkerNumber = user.WorkerNumber,
+            TitleBefore = user.TitleBefore,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            TitleAfter = user.TitleAfter,
+            JobTitle = user.JobTitle,
+            CompanyName = user.CompanyName,
+            CompanyAddress = user.CompanyAddress,
+            PhoneNumber = user.PhoneNumber,
+            PersonalNumber = user.PersonalNumber,
+            Email = user.Email,
+            Note = user.Note,
+            IsActive = user.IsActive
+        };
+    }
+
+    private static string BuildDisplayName(UserAccount user)
+    {
+        if (!string.IsNullOrWhiteSpace(user.DisplayName))
+        {
+            return user.DisplayName.Trim();
+        }
+
+        var first = user.FirstName?.Trim() ?? string.Empty;
+        var last = user.LastName?.Trim() ?? string.Empty;
+        var combined = $"{first} {last}".Trim();
+
+        if (!string.IsNullOrWhiteSpace(combined))
+        {
+            return combined;
+        }
+
+        if (!string.IsNullOrWhiteSpace(user.Login))
+        {
+            return user.Login.Trim();
+        }
+
+        return (user.Username ?? string.Empty).Trim();
     }
 
     private void OnCurrentUserChanged(object? sender, EventArgs e)
@@ -713,7 +930,13 @@ public class UsersViewModel : ViewModelBase
         UserFormSuccess = string.Empty;
         _currentEditUserId = null;
         _currentEditUserLogin = null;
+        _loginEditedManually = false;
+        _jobTitleEditedManually = false;
+        _emailEditedManually = false;
+        _lastSuggestedJobTitle = string.Empty;
+        IsLoginReadOnly = true;
         UpdateCommandStates();
+        ApplyJobTitleSuggestionForRole();
     }
 
     private void ClearEditFields()
@@ -721,16 +944,19 @@ public class UsersViewModel : ViewModelBase
         EditUsername = string.Empty;
         EditDisplayName = string.Empty;
         EditRole = AvailableRoles.First();
-        EditLogin = string.Empty;
+        SetEditLoginInternal(string.Empty);
         EditWorkerNumber = string.Empty;
         EditTitleBefore = string.Empty;
         EditFirstName = string.Empty;
         EditLastName = string.Empty;
         EditTitleAfter = string.Empty;
         EditJobTitle = string.Empty;
-        EditCompanyName = string.Empty;
+        EditCompanyName = _appState.CoreCompanyName;
         EditCompanyAddress = string.Empty;
         EditPhoneNumber = string.Empty;
+        EditPhonePrefix = _appState.DefaultPhonePrefix;
+        EditPersonalNumber = string.Empty;
+        SetEditEmailInternal(string.Empty);
         EditNote = string.Empty;
         EditIsActive = true;
     }
@@ -768,7 +994,7 @@ public class UsersViewModel : ViewModelBase
 
     private Dictionary<string, string> BuildDisplayToDomainRoleMap()
     {
-        var domainRoles = new[] { Roles.Kontrolor, Roles.Administrator, Roles.Mistr, Roles.Technik, Roles.Predak, Roles.Delnik };
+        var domainRoles = new[] { Roles.Administrator, Roles.Mistr, Roles.Kontrolor, Roles.Technik, Roles.Predak, Roles.Delnik };
 
         return AvailableRoles
             .Zip(domainRoles, (display, domain) => new { display, domain })
@@ -777,7 +1003,7 @@ public class UsersViewModel : ViewModelBase
 
     private Dictionary<string, string> BuildDomainToDisplayRoleMap()
     {
-        var domainRoles = new[] { Roles.Kontrolor, Roles.Administrator, Roles.Mistr, Roles.Technik, Roles.Predak, Roles.Delnik };
+        var domainRoles = new[] { Roles.Administrator, Roles.Mistr, Roles.Kontrolor, Roles.Technik, Roles.Predak, Roles.Delnik };
 
         return domainRoles
             .Zip(AvailableRoles, (domain, display) => new { domain, display })
@@ -786,13 +1012,13 @@ public class UsersViewModel : ViewModelBase
 
     private void AutoGenerateLoginForNewUser()
     {
-        if (!IsNewUser)
+        if (!IsCreateMode)
         {
             return;
         }
 
         // Do not overwrite a login that the user already typed.
-        if (!string.IsNullOrWhiteSpace(EditLogin))
+        if (_loginEditedManually)
         {
             return;
         }
@@ -817,7 +1043,93 @@ public class UsersViewModel : ViewModelBase
             return;
         }
 
-        EditLogin = uniqueLogin;
+        SetEditLoginInternal(uniqueLogin);
+        AutoGenerateEmailForNewUser();
+    }
+
+    private void EnsureLoginForNewUser()
+    {
+        if (!IsCreateMode && !string.IsNullOrWhiteSpace(EditLogin))
+        {
+            return;
+        }
+
+        if (!string.IsNullOrWhiteSpace(EditLogin))
+        {
+            return;
+        }
+
+        var first = (EditFirstName ?? string.Empty).Trim();
+        var last = (EditLastName ?? string.Empty).Trim();
+
+        if (string.IsNullOrWhiteSpace(first) && string.IsNullOrWhiteSpace(last))
+        {
+            return;
+        }
+
+        var baseLogin = BuildBaseLoginFromName(first, last);
+        var uniqueLogin = GenerateUniqueLogin(baseLogin);
+
+        if (!string.IsNullOrWhiteSpace(uniqueLogin))
+        {
+            SetEditLoginInternal(uniqueLogin);
+            AutoGenerateEmailForNewUser();
+        }
+    }
+
+    private void UpdateAggregates()
+    {
+        var total = Users.Count;
+        var active = Users.Count(u => u.IsActive);
+        var inactive = total - active;
+        var core = Users.Count(u => IsCoreCompany(u.CompanyName));
+        var sub = total - core;
+
+        int admin = 0, mistr = 0, kontrolor = 0, technik = 0, predak = 0, delnik = 0;
+
+        foreach (var u in Users)
+        {
+            switch (u.Role)
+            {
+                case var role when string.Equals(role, Roles.Administrator, StringComparison.OrdinalIgnoreCase):
+                    admin++; break;
+                case var role when string.Equals(role, Roles.Mistr, StringComparison.OrdinalIgnoreCase):
+                    mistr++; break;
+                case var role when string.Equals(role, Roles.Kontrolor, StringComparison.OrdinalIgnoreCase):
+                    kontrolor++; break;
+                case var role when string.Equals(role, Roles.Technik, StringComparison.OrdinalIgnoreCase):
+                    technik++; break;
+                case var role when string.Equals(role, Roles.Predak, StringComparison.OrdinalIgnoreCase):
+                    predak++; break;
+                case var role when string.Equals(role, Roles.Delnik, StringComparison.OrdinalIgnoreCase):
+                    delnik++; break;
+            }
+        }
+
+        TotalUsers = total;
+        ActiveUsers = active;
+        InactiveUsers = inactive;
+        CoreEmployees = core;
+        Subcontractors = sub;
+        AdminCount = admin;
+        MistrCount = mistr;
+        KontrolorCount = kontrolor;
+        TechnikCount = technik;
+        PredakCount = predak;
+        DelnikCount = delnik;
+    }
+
+    private void SetEditLoginInternal(string login)
+    {
+        _suppressLoginManualFlag = true;
+        try
+        {
+            EditLogin = login;
+        }
+        finally
+        {
+            _suppressLoginManualFlag = false;
+        }
     }
 
     private static string BuildBaseLoginFromName(string firstName, string lastName)
@@ -835,15 +1147,51 @@ public class UsersViewModel : ViewModelBase
 
         if (string.IsNullOrWhiteSpace(last))
         {
-            return first;
+            return $"{first}.";
         }
 
         if (string.IsNullOrWhiteSpace(first))
         {
-            return last;
+            return $"{last}.";
         }
 
         return $"{first}.{last}";
+    }
+
+    private void AutoGenerateEmailForNewUser()
+    {
+        if (!IsCreateMode)
+        {
+            return;
+        }
+
+        if (_emailEditedManually)
+        {
+            return;
+        }
+
+        var domain = (_appState.EmailDomain ?? string.Empty).Trim();
+        if (string.IsNullOrWhiteSpace(domain))
+        {
+            return;
+        }
+
+        var login = (EditLogin ?? string.Empty).Trim().TrimEnd('.');
+        if (string.IsNullOrWhiteSpace(login))
+        {
+            var first = (EditFirstName ?? string.Empty).Trim();
+            var last = (EditLastName ?? string.Empty).Trim();
+            var baseLogin = BuildBaseLoginFromName(first, last).TrimEnd('.');
+            login = baseLogin;
+        }
+
+        if (string.IsNullOrWhiteSpace(login))
+        {
+            return;
+        }
+
+        var email = $"{login}@{domain}";
+        SetEditEmailInternal(email);
     }
 
     private string GenerateUniqueLogin(string baseLogin)
@@ -869,12 +1217,25 @@ public class UsersViewModel : ViewModelBase
             }
         }
 
+        foreach (var userItem in Users)
+        {
+            if (!string.IsNullOrWhiteSpace(userItem.Login))
+            {
+                existing.Add(userItem.Login.Trim());
+            }
+
+            if (!string.IsNullOrWhiteSpace(userItem.Username))
+            {
+                existing.Add(userItem.Username.Trim());
+            }
+        }
+
         if (!existing.Contains(baseLogin))
         {
             return baseLogin;
         }
 
-        var suffix = 2;
+        var suffix = 1;
         while (true)
         {
             var candidate = $"{baseLogin}{suffix}";
@@ -884,6 +1245,108 @@ public class UsersViewModel : ViewModelBase
             }
 
             suffix++;
+        }
+    }
+
+    private void ApplyJobTitleSuggestionForRole()
+    {
+        var roleDomain = NormalizeRoleForDomain(EditRole);
+        var suggestion = GetJobTitleSuggestion(roleDomain);
+
+        if (_jobTitleEditedManually &&
+            !string.IsNullOrWhiteSpace(EditJobTitle) &&
+            !string.Equals(EditJobTitle, _lastSuggestedJobTitle, StringComparison.OrdinalIgnoreCase))
+        {
+            _lastSuggestedJobTitle = suggestion;
+            return;
+        }
+
+        _lastSuggestedJobTitle = suggestion;
+        _suppressJobTitleManualFlag = true;
+        try
+        {
+            EditJobTitle = suggestion;
+        }
+        finally
+        {
+            _suppressJobTitleManualFlag = false;
+        }
+        _jobTitleEditedManually = false;
+    }
+
+    private static string GetJobTitleSuggestion(string roleDomain)
+    {
+        if (string.Equals(roleDomain, Roles.Administrator, StringComparison.OrdinalIgnoreCase))
+        {
+            return "Stavbyvedoucí";
+        }
+
+        if (string.Equals(roleDomain, Roles.Mistr, StringComparison.OrdinalIgnoreCase))
+        {
+            return "Mistr stavební výroby";
+        }
+
+        if (string.Equals(roleDomain, Roles.Technik, StringComparison.OrdinalIgnoreCase))
+        {
+            return "Mistr stavební výroby";
+        }
+
+        if (string.Equals(roleDomain, Roles.Predak, StringComparison.OrdinalIgnoreCase))
+        {
+            return "Předák";
+        }
+
+        if (string.Equals(roleDomain, Roles.Kontrolor, StringComparison.OrdinalIgnoreCase))
+        {
+            return "Kontrolor";
+        }
+
+        return string.Empty;
+    }
+
+    private static string BuildFullPhoneNumber(string? prefix, string? number)
+    {
+        var cleanPrefix = prefix?.Trim() ?? string.Empty;
+        var cleanNumber = number?.Trim() ?? string.Empty;
+
+        if (string.IsNullOrWhiteSpace(cleanPrefix) && string.IsNullOrWhiteSpace(cleanNumber))
+        {
+            return string.Empty;
+        }
+
+        if (string.IsNullOrWhiteSpace(cleanPrefix))
+        {
+            return cleanNumber;
+        }
+
+        if (string.IsNullOrWhiteSpace(cleanNumber))
+        {
+            return cleanPrefix;
+        }
+
+        return $"{cleanPrefix} {cleanNumber}";
+    }
+
+    private void SetPhoneFieldsFromStored(string? stored)
+    {
+        var value = stored?.Trim() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            EditPhonePrefix = PhonePrefixes.First();
+            EditPhoneNumber = string.Empty;
+            return;
+        }
+
+        var parts = value.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length > 0 && parts[0].StartsWith("+", StringComparison.Ordinal))
+        {
+            EditPhonePrefix = parts[0];
+            EditPhoneNumber = parts.Length > 1 ? parts[1] : string.Empty;
+        }
+        else
+        {
+            EditPhonePrefix = PhonePrefixes.First();
+            EditPhoneNumber = value;
         }
     }
 
@@ -941,11 +1404,13 @@ public class UsersViewModel : ViewModelBase
         UpdateCommandStates();
 
         var success = false;
+        var isCreateOperation = IsCreateMode;
         SetError(string.Empty);
         SetSuccess(string.Empty);
 
         try
         {
+            EnsureLoginForNewUser();
             if (!ValidateRequiredFields())
             {
                 return false;
@@ -969,7 +1434,8 @@ public class UsersViewModel : ViewModelBase
             IsNewUser = false;
 
             ReloadUsersFromService(saved.Username, saved.Id);
-            SetSuccess("Uživatel byl uložen.");
+            var successMessage = isCreateOperation ? "Založen uživatel." : "Uživatel byl uložen.";
+            SetSuccess(successMessage);
             success = true;
             return true;
         }
@@ -1009,7 +1475,9 @@ public class UsersViewModel : ViewModelBase
             JobTitle = EditJobTitle?.Trim() ?? string.Empty,
             CompanyName = EditCompanyName?.Trim() ?? string.Empty,
             CompanyAddress = EditCompanyAddress?.Trim() ?? string.Empty,
-            PhoneNumber = EditPhoneNumber?.Trim() ?? string.Empty,
+            PhoneNumber = BuildFullPhoneNumber(EditPhonePrefix, EditPhoneNumber),
+            PersonalNumber = EditPersonalNumber?.Trim() ?? string.Empty,
+            Email = EditEmail?.Trim() ?? string.Empty,
             Note = EditNote?.Trim() ?? string.Empty,
             IsActive = EditIsActive,
             EmploymentType = IsCoreCompany(EditCompanyName)
@@ -1050,6 +1518,46 @@ public class UsersViewModel : ViewModelBase
     {
         UserFormSuccess = message;
         UserFormError = string.Empty;
+    }
+
+    private void EnableLoginEdit()
+    {
+        IsLoginReadOnly = false;
+    }
+
+    private void UpdateEmailFromLoginIfNeeded()
+    {
+        if (_emailEditedManually)
+        {
+            return;
+        }
+
+        var domain = (_appState.EmailDomain ?? string.Empty).Trim();
+        if (string.IsNullOrWhiteSpace(domain))
+        {
+            return;
+        }
+
+        var login = (EditLogin ?? string.Empty).Trim().TrimEnd('.');
+        if (string.IsNullOrWhiteSpace(login))
+        {
+            return;
+        }
+
+        SetEditEmailInternal($"{login}@{domain}");
+    }
+
+    private void SetEditEmailInternal(string value)
+    {
+        _suppressEmailManualFlag = true;
+        try
+        {
+            EditEmail = value;
+        }
+        finally
+        {
+            _suppressEmailManualFlag = false;
+        }
     }
 
     private sealed class RelayCommand : ICommand

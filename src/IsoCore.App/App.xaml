@@ -12,6 +12,7 @@
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
                 <ResourceDictionary Source="ms-appx:///Styles/Theme.xaml"/>
                 <ResourceDictionary Source="ms-appx:///Styles/LeftMenuStyles.xaml"/>
+                <ResourceDictionary Source="ms-appx:///Styles/InlineStyles.xaml"/>
                 <!-- Other merged dictionaries here -->
             </ResourceDictionary.MergedDictionaries>
             <!-- Other app resources here -->

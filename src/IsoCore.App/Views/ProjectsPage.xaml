@@ -8,6 +8,14 @@
     xmlns:views="using:IsoCore.App.Views"
     mc:Ignorable="d">
 
+    <views:MenuPage.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/ListPageStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </views:MenuPage.Resources>
+
     <Grid Background="{StaticResource IcbdWindowBackgroundBrush}"
           Style="{StaticResource IcbdPageGrid}"
           ColumnSpacing="{StaticResource IcbdSpacingMedium}"
@@ -30,28 +38,26 @@
                         Spacing="{StaticResource IcbdSpacingMedium}">
                 <TextBlock Text="Akce projektu"
                            Style="{StaticResource IcbdSubheaderText}" />
-                <StackPanel Orientation="Vertical"
-                            Spacing="{StaticResource IcbdSpacingSmall}"
-                            HorizontalAlignment="Stretch">
-                    <Button x:Name="NewProjectButton"
+                <StackPanel Style="{StaticResource PageActionsPanel}">
+                                        <Button x:Name="NewProjectButton"
                             Content="Založit projekt"
-                            Style="{StaticResource IcbdPrimaryButtonFullWidth}"
+                            Style="{StaticResource IcbdPrimaryButton}"
                             Click="NewProjectButton_Click" />
                     <Button x:Name="OpenProjectButton"
                             Content="Otevřít projekt"
-                            Style="{StaticResource IcbdSecondaryButtonFullWidth}"
                             Click="OpenProjectButton_Click"
-                            IsEnabled="False" />
+                            IsEnabled="False"
+                            Style="{StaticResource StretchHorizontalSecondaryButton}" />
                     <Button x:Name="EditProjectButton"
                             Content="Editovat projekt"
-                            Style="{StaticResource IcbdSecondaryButtonFullWidth}"
                             Click="EditProjectButton_Click"
-                            IsEnabled="{Binding HasSelectedProject}" />
+                            IsEnabled="{Binding HasSelectedProject}"
+                            Style="{StaticResource StretchHorizontalSecondaryButton}" />
                     <Button x:Name="DeleteProjectButton"
                             Content="Smazat projekt"
-                            Style="{StaticResource IcbdSecondaryButtonFullWidth}"
                             Click="DeleteProjectButton_Click"
-                            IsEnabled="{Binding HasSelectedProject}" />
+                            IsEnabled="{Binding HasSelectedProject}"
+                            Style="{StaticResource StretchHorizontalSecondaryButton}" />
                 </StackPanel>
             </StackPanel>
         </Border>
@@ -59,12 +65,12 @@
         <!-- Levý spodní blok: Poslední změny -->
         <Border Grid.Row="1"
                 Grid.Column="0"
-                Style="{StaticResource IcbdDashboardCardStretchStyle}"
+                Style="{StaticResource StretchVerticalBorder}"
                 Padding="{StaticResource IcbdPaddingL}">
             <StackPanel Spacing="{StaticResource IcbdSpacingSmall}">
                 <TextBlock Text="Poslední změny"
                            Style="{StaticResource IcbdSectionHeaderText}" />
-                <TextBlock Text="Zatím žádné zobrazené změny."
+                <TextBlock Text="Zatím žádné změny k zobrazení."
                            Style="{StaticResource IcbdBodyTextBlockStyle}" />
             </StackPanel>
         </Border>
@@ -72,7 +78,7 @@
         <!-- Pravý horní blok: Seznam projektů -->
         <Border Grid.Row="0"
                 Grid.Column="1"
-                Style="{StaticResource IcbdDashboardCardStretchStyle}"
+                Style="{StaticResource StretchVerticalBorder}"
                 Padding="{StaticResource IcbdPaddingL}">
             <Grid RowDefinitions="Auto,*,Auto"
                   RowSpacing="{StaticResource IcbdSpacingMedium}">
@@ -96,8 +102,7 @@
                     <Grid Grid.Row="0"
                           Grid.RowSpan="2"
                           Grid.Column="1"
-                          Style="{StaticResource IcbdHeaderActionGrid}"
-                          ColumnSpacing="{StaticResource IcbdSpacingSmall}">
+                          Style="{StaticResource ListFilterGrid}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
@@ -106,13 +111,13 @@
 
                         <Button Grid.Column="0"
                                 Content="Filtr"
-                                Style="{StaticResource IcbdSecondaryButtonFullWidth}" />
+                                Style="{StaticResource StretchHorizontalSecondaryButton}" />
                         <Button Grid.Column="1"
                                 Content="Hledat"
-                                Style="{StaticResource IcbdSecondaryButtonFullWidth}" />
+                                Style="{StaticResource StretchHorizontalSecondaryButton}" />
                         <Button Grid.Column="2"
                                 Content="Řazení"
-                                Style="{StaticResource IcbdSecondaryButtonFullWidth}" />
+                                Style="{StaticResource StretchHorizontalSecondaryButton}" />
                     </Grid>
                 </Grid>
 
@@ -133,18 +138,18 @@
                                 <TextBlock Grid.Row="0"
                                            Grid.Column="0"
                                            Text="{Binding ProjectCode}"
-                                           Style="{StaticResource IcbdListItemCodeText}" />
+                                           Style="{StaticResource ProjectListCodeText}" />
                                 <TextBlock Grid.Row="0"
                                            Grid.Column="1"
                                            Text="{Binding DisplayName}"
-                                           Style="{StaticResource IcbdListItemTitleEllipsis}" />
+                                           Style="{StaticResource ProjectListTitleText}" />
 
                                 <!-- Second row: status / description / other detail (compact) -->
                                 <TextBlock Grid.Row="1"
                                            Grid.Column="0"
                                            Grid.ColumnSpan="2"
                                            Text="{Binding ProjectStatus}"
-                                           Style="{StaticResource IcbdBodyEllipsisMutedText}" />
+                                           Style="{StaticResource ProjectListStatusText}" />
                             </Grid>
                         </DataTemplate>
                     </ListView.ItemTemplate>
@@ -162,7 +167,7 @@
         <!-- Pravý spodní blok: Detail projektu -->
         <Border Grid.Row="1"
                 Grid.Column="1"
-                Style="{StaticResource IcbdDashboardCardStretchStyle}"
+                Style="{StaticResource StretchVerticalBorder}"
                 Padding="{StaticResource IcbdPaddingL}">
             <StackPanel Spacing="{StaticResource IcbdSpacingMedium}">
                 <TextBlock Text="Detail projektu"
